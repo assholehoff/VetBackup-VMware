@@ -16,6 +16,8 @@ Because the database in question contains animal medical records and personal in
 4. Compress and send outside VM
 5. Send copy of zip file outside computer
 
+Like before, scheduling and triggering is handled in macOS. I find `launchd(8)` to be way, _way_ easier and more reliable than the Windows Task Scheduler. 
+
 ## TODO
 
 - Some kind of check on the copy. I have yet to find a better method than raising an alarm when a copy is significantly smaller than previous copies.
