@@ -1,6 +1,6 @@
 # VetBackup-VMware
 
-Backup solution for the long-since discontinued veterinary management database software `VetVision` running in a Windows 11 VM under macOS running VMware Fusion
+Backup solution for the long-since discontinued veterinary management database software `VetVision` running in a Windows 11 VM under macOS running VMware Fusion.
 
 This is the second, (slightly) more performant version, where the shell scripts (Korn and PowerShell) are replaced by compiled native programs (Swift and C#). It also comes with a menu bar widget for easy configuration and info on backups.
 
@@ -20,6 +20,6 @@ Like before, scheduling and triggering is handled in macOS. I find `launchd(8)` 
 
 ## TODO
 
-- Some kind of check on the copy. I have yet to find a better method than raising an alarm when a copy is significantly smaller than previous copies.
+- Some kind of check on the copy. I have yet to find a better method than raising an alarm when a copy is (significantly) smaller than previous copies.
 - Discrete, disappearing notification when backup is occurring/done.
 - A clever way to figure out when making a backup during the day is least intrusive. Every cycle requires VetVision to be closed for less than a minute.
