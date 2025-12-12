@@ -9,9 +9,23 @@ import SwiftUI
 
 @main
 struct VetBackupApp: App {
+    @AppStorage("BackupFolderURL") private var BackupFolderURL: URL =
+        .documentsDirectory.appending(path: "VetVision", directoryHint: .isDirectory)
+    
     var body: some Scene {
-        MenuBarExtra("VetBackup", systemImage: "hare.fill"){
-            ContentView().frame(width: 400)
-        }.menuBarExtraStyle(.window)
+        @ObservedObject var folder: BackupFolder = BackupFolder(url: BackupFolderURL)
+        
+        MenuBarExtra("VetBackup", systemImage: "hare.fill") {
+            ContentView(folder: folder)
+        }
+        .menuBarExtraStyle(.window)
+        Settings {
+            SettingsView()
+        }
+        Window("Backups", id: "backupWindow") {
+            BackupView(folder: folder)
+                .frame(minWidth: 704, minHeight: 360)
+        }
+        .windowResizability(.automatic)
     }
 }
