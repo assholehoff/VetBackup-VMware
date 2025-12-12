@@ -11,7 +11,7 @@ namespace VetBackup {
             var sourceFilesArgument = new Argument<string[]>("source") { Arity = ArgumentArity.OneOrMore };
 
             targetDirectoryOption.Description = "The directory to place the backup zip file into. Defaults to the current working directory.";
-            targetDirectoryOption.DefaultValueFactory = def => Directory.GetCurrentDirectory();
+            targetDirectoryOption.DefaultValueFactory = def => "V:\\";
             targetDirectoryOption.Validators.Add(result => {
                 var value = result.GetValueOrDefault<string>();
                 if (value != null && !Directory.Exists(value)) {
@@ -31,9 +31,9 @@ namespace VetBackup {
             string temp = Path.GetTempPath();
 
             var action = new Action<ParseResult>(parseResult => {
-                string targetDirectory = parseResult.GetValue(targetDirectoryOption) ?? Directory.GetCurrentDirectory();
+                string targetDirectory = parseResult.GetValue(targetDirectoryOption) ?? "V:\\";
                 string dateFormat = parseResult.GetValue(targetDateFormat) ?? "yyyyMMdd-HHmmss";
-                string namePrefix = parseResult.GetValue(targetNamePrefix) ?? "VetBackup-";
+                string namePrefix = parseResult.GetValue(targetNamePrefix) ?? "DVS-";
                 string[] sourceFiles = parseResult.GetValue(sourceFilesArgument)!;
                 string timestamp = DateTime.Now.ToString(dateFormat);
                 string workDirectory = Path.Combine(temp, $"{namePrefix}{timestamp}");
