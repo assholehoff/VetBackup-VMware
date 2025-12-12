@@ -20,6 +20,11 @@ Like before, scheduling and triggering is handled in macOS. I find `launchd(8)` 
 
 ## TODO
 
-- Some kind of check on the copy. I have yet to find a better method than raising an alarm when a copy is (significantly) smaller than previous copies.
-- Discrete, disappearing notification when backup is occurring/done.
-- A clever way to figure out when making a backup during the day is least intrusive. Every cycle requires VetVision to be closed for less than a minute.
+[X] Discrete, disappearing notification when backup is occurring/done.
+[X] iCloud upload status of old backups
+[ ] LAN file server upload status of old backups
+    [ ] BSD daemon for LAN file server
+[ ] Scheduler
+[ ] Cleaner
+[ ] [LOW PRIO] Some kind of check on the copy. I have yet to find a better method than raising an alarm when a copy is (significantly) smaller than previous copies
+[ ] [LOW PRIO] A clever way to figure out when making a backup during the day is least intrusive. Every cycle requires VetVision to be closed for less than a minute

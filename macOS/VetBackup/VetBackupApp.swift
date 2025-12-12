@@ -27,5 +27,15 @@ struct VetBackupApp: App {
                 .frame(minWidth: 704, minHeight: 360)
         }
         .windowResizability(.automatic)
+        .commands {
+            CommandGroup(after: .newItem) {
+                Button("Backup now", systemImage: "play.fill") {}
+                    .keyboardShortcut("B")
+            }
+            CommandMenu("Backups") {
+                Button("Old backups", systemImage: "house.fill") {}
+                    .keyboardShortcut("O")
+            }
+        }
     }
 }

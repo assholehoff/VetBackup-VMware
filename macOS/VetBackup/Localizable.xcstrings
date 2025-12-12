@@ -162,6 +162,16 @@
         }
       }
     },
+    "Old backups" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Äldre säkerhetskopior"
+          }
+        }
+      }
+    },
     "Open Settings" : {
       "localizations" : {
         "sv" : {
