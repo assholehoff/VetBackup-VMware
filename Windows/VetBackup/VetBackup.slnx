@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+  </Folder>
   <Project Path="VetBackup.BackupDatabase/VetBackup.BackupDatabase.csproj" Id="7a1bb25c-0c68-4f31-834d-ffa606d12105" />
   <Project Path="VetBackup.LastModifiedDate/VetBackup.LastModifiedDate.csproj" Id="4f1c8737-4020-471a-9a04-4ec9ef6c65ac" />
   <Project Path="VetBackup.Shared/VetBackup.Shared.csproj" Id="28b86728-b626-4f18-a544-4e8677cd1d0f" />

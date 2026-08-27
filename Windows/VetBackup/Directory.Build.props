@@ -1,0 +1,17 @@
+<Project>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<Company>Anton Dahlén</Company>
+		<Product>VetBackup</Product>
+
+		<AssemblyVersion>9.5.0</AssemblyVersion>
+		<VersionPrefix>$(AssemblyVersion)</VersionPrefix>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+
+		<BaseOutputPath>C:\Users\anton\build\VetBackup</BaseOutputPath>
+	</PropertyGroup>
+</Project>
