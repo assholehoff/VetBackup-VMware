@@ -8,32 +8,56 @@
 import Foundation
 
 public class VMXFile: File {
-    func DiskFileURL() -> URL {
-        if let diskFileName = try? valueForKey("nvme0:0.fileName", inVMXPath: self.id) {
-            print("found diskfile: \(self.id.deletingLastPathComponent().appendingPathComponent(diskFileName))")
-            return self.id.deletingLastPathComponent().appendingPathComponent(diskFileName)
+    func diskFileUrl() -> URL {
+        let diskFileUrl: URL
+        if let diskFileName = valueFor(key: "nvme0:0.fileName") {
+            diskFileUrl = self.url.deletingLastPathComponent().appendingPathComponent(diskFileName)
+        } else {
+            diskFileUrl = self.url.deletingLastPathComponent().appending(path: "Virtual Disk-000001-s001.vmdk")
         }
-        print("defaulting to generic: \(self.id.deletingLastPathComponent().appending(path: "Virtual Disk-000001-s001.vmdk"))")
-        return self.id.deletingLastPathComponent().appending(path: "Virtual Disk-000001-s001.vmdk")
+        return diskFileUrl
     }
-    func Path() -> String {
-        return id.path(percentEncoded: false)
+
+    func path() -> String {
+        return self.url.path(percentEncoded: false)
+    }
+
+    func valueFor(key: String) -> String? {
+        try? parseFileFor(key: key, in: self.url)
+    }
+
+    private func parseFileFor(key: String, in url: URL) throws -> String? {
+        let lines = try String(contentsOf: url, encoding: .utf8).split(separator: "\n")
+        for line in lines {
+            if line.trimmingCharacters(in: .whitespaces).hasPrefix(key + " =") {
+                // Extract the value after the '=' and remove quotes and whitespace
+                let parts = line.split(separator: "=", maxSplits: 1)
+                if parts.count == 2 {
+                    let value = parts[1]
+                        .trimmingCharacters(in: .whitespaces)
+                        .trimmingCharacters(in: .init(charactersIn: "\""))
+                    return value
+                }
+            }
+        }
+        return nil
     }
 }
 
-func valueForKey(_ key: String, inVMXPath path: URL) throws -> String? {
-    let lines = try String(contentsOf: path, encoding: .utf8).split(separator: "\n")
-    for line in lines {
-        if line.trimmingCharacters(in: .whitespaces).hasPrefix(key + " =") {
-            // Extract the value after the '=' and remove quotes and whitespace
-            let parts = line.split(separator: "=", maxSplits: 1)
-            if parts.count == 2 {
-                let value = parts[1]
-                    .trimmingCharacters(in: .whitespaces)
-                    .trimmingCharacters(in: .init(charactersIn: "\""))
-                return value
-            }
+func findVmxFile(in url: URL) -> VMXFile? {
+    // extract VM name by removing `.vmwarevm` from lastPathComponent
+    let vmxFileName: String = (url.lastPathComponent.removingPercentEncoding ?? url.lastPathComponent).dropLast(9).appending(".vmx")
+    if FileManager.default.fileExists(atPath: url.appending(path: vmxFileName).path(percentEncoded: false)) {
+        return VMXFile(url: url.appending(path: vmxFileName), created: nil)
+    }
+
+    // no file named VMname.vmx found in VM bundle, do a search and pick the vmx file in the directory
+    if let urls = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: []) {
+        for url in urls.filter({ $0.lastPathComponent.hasSuffix(".vmx") }) {
+            // return the first match (should only be one)
+            return VMXFile(url: url, created: nil)
         }
     }
+
     return nil
 }

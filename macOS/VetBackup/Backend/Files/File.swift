@@ -1,5 +1,5 @@
 //
-//  FileOperations.swift
+//  File.swift
 //  VetBackup
 //
 //  Created by Anton Dahlén on 2026-06-21.
@@ -7,60 +7,46 @@
 
 import Foundation
 
-public class File: Identifiable {
-    public let id: URL
-    var name: String
-    var created: Date
-    var modified: Date
+public class File: Hashable, Identifiable {
+    public let id: String
+    public var url: URL
+    let name: String
+    var created: Date?
+    var modified: Date?
 
-    
-    init(url: URL) {
-//        print("File.init()")
-        if FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) {
-//            print("File exists at \(url.path(percentEncoded: false))")
+    init(url: URL, created: Date?) {
+        self.id = url.absoluteString
+        self.url = url
+        self.name = url.lastPathComponent.removingPercentEncoding ?? url.lastPathComponent
+
+        if created == nil,
+           let createdFromMetadata = try? url.resourceValues(forKeys: [.creationDateKey]).creationDate {
+            self.created = createdFromMetadata
         } else {
-//            print("File not found: \(url.path(percentEncoded: false))")
-            exit(1)
+            self.created = created
         }
-        
-        self.id = url
-        self.name = url.lastPathComponent
-        self.created = try! url.resourceValues(forKeys: [.creationDateKey]).creationDate ?? Date()
-        self.modified = try! url.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate ?? Date()
-        
-//        print("id: \(id)")
-//        print("path: \(id.path(percentEncoded: false))")
-//        print("name: \(name)")
-//        print("created: \(created)")
-//        print("modified: \(modified)")
     }
-    
-    func Exists() -> Bool {
-        FileManager.default.fileExists(atPath: id.path)
+
+    static public func ==(a: File, b: File) -> Bool {
+        a.id == b.id
     }
-    
-    func Delete() -> Bool {
-        ((try? FileManager.default.removeItem(at: id)) != nil)
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
     }
-    
-    func CreatedDate() -> Date? {
-        let resourceValues = try? id.resourceValues(forKeys: [.creationDateKey])
-        if let date = resourceValues?.creationDate {
-            print("File.CreatedDate: \(date)")
-            self.created = date
-            print("UPDATED")
+
+    public func exists() -> Bool {
+        FileManager.default.fileExists(atPath: url.path)
+    }
+
+    public func refreshAttributes() -> Bool {
+        let keys: Set<URLResourceKey> = [.creationDateKey, .contentModificationDateKey]
+        if let values = try? url.resourceValues(forKeys: keys) {
+            self.created = values.creationDate
+            self.modified = values.contentModificationDate
+            return true
         }
-//        let inode = try? id.resourceValues(forKeys: [.fileIdentifierKey])
-        return resourceValues?.creationDate
-    }
-    
-    func ModifiedDate() -> Date? {
-        let resourceValues = try? id.resourceValues(forKeys: [.contentModificationDateKey])
-        if let date = resourceValues?.contentModificationDate {
-            print("File.ModifiedDate: \(date)")
-            self.modified = date
-            print("UPDATED")
-        }
-        return resourceValues?.contentModificationDate
+        return false
     }
 }
+
