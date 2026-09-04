@@ -11,12 +11,72 @@
         }
       }
     },
-    "Backing up" : {
+    "%lld files" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld file"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld files"
+                }
+              }
+            }
+          }
+        },
+        "sv" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld fil"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld filer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Archive" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Säkerhetskopierar"
+            "value" : "Arkiv"
+          }
+        }
+      }
+    },
+    "Backup completed" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Säkerhetskopiering slutförd"
+          }
+        }
+      }
+    },
+    "Backup completed on " : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Säkerhetskopiering slutförd den"
           }
         }
       }
@@ -31,12 +91,22 @@
         }
       }
     },
-    "Backup folder:" : {
+    "Backup failed on " : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mapp med säkerhetskopior:"
+            "value" : "Säkerhetskopiering misslyckades den"
+          }
+        }
+      }
+    },
+    "Backup Folder" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mapp"
           }
         }
       }
@@ -62,15 +132,38 @@
         }
       }
     },
-    "Backups" : {
+    "Backup ongoing..." : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Säkerhetskopior"
+            "value" : "Säkerhetskopiering pågår…"
           }
         }
       }
+    },
+    "Backup time" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tidpunkt"
+          }
+        }
+      }
+    },
+    "Daily backup" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Säkerhetskopiera dagligen"
+          }
+        }
+      }
+    },
+    "Database.fdb" : {
+      "shouldTranslate" : false
     },
     "Date" : {
       "localizations" : {
@@ -82,22 +175,22 @@
         }
       }
     },
-    "Directory" : {
+    "Diagnostics" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagnostik"
+          }
+        }
+      }
+    },
+    "Folder" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mapp"
-          }
-        }
-      }
-    },
-    "File" : {
-      "localizations" : {
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fil"
           }
         }
       }
@@ -112,12 +205,22 @@
         }
       }
     },
-    "LAN Server" : {
+    "Key" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "LAN-server"
+            "value" : "Nyckel"
+          }
+        }
+      }
+    },
+    "Last backup attempt" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senaste säkerhetskopieringsförsök"
           }
         }
       }
@@ -127,7 +230,28 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Senaste säkerhetskopia genomförd"
+            "value" : "Senaste säkerhetskopiering genomfördes"
+          }
+        }
+      }
+    },
+    "Last Date" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senaste datum"
+          }
+        }
+      }
+    },
+    "Launch at login" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starta vid inloggning"
           }
         }
       }
@@ -142,47 +266,89 @@
         }
       }
     },
-    "No backup found" : {
+    "Modified" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen säkerhetskopia hittades"
+            "value" : "Ändrad"
           }
         }
       }
     },
-    "Notify on backup" : {
+    "Name" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Visa notis vid säkerhetskopiering"
+            "value" : "Namn"
           }
         }
       }
     },
-    "Old backups" : {
+    "Next backup scheduled for" : {
+      "comment" : "A label displayed below the date of the next backup.",
+      "isCommentAutoGenerated" : true,
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Äldre säkerhetskopior"
+            "value" : "Nästa säkerhetskopiering schemalagd den"
           }
         }
       }
     },
-    "Open Settings" : {
+    "Next Date" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öppna inställningar"
+            "value" : "Nästa datum"
           }
         }
       }
     },
-    "Run at login" : {
+    "Password" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lösenord"
+          }
+        }
+      }
+    },
+    "Path" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sökväg"
+          }
+        }
+      }
+    },
+    "Proceed" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortsätt"
+          }
+        }
+      }
+    },
+    "Quit" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avsluta"
+          }
+        }
+      }
+    },
+    "Run on login" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
@@ -192,22 +358,32 @@
         }
       }
     },
-    "Select folder" : {
+    "Running" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Välj mapp"
+            "value" : "Körs"
           }
         }
       }
     },
-    "Server address" : {
+    "Settings" : {
       "localizations" : {
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Serveradress"
+            "value" : "Inställningar"
+          }
+        }
+      }
+    },
+    "Setup VetBackup" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ställ in VetBackup"
           }
         }
       }
@@ -218,104 +394,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Storlek"
-          }
-        }
-      }
-    },
-    "There are %lld files in %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "There are %1$lld files in %2$@"
-          }
-        },
-        "sv" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Det finns %1$lld fil i %2$@"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Det finns %1$lld filer i %2$@"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "There are %lld files in %@, %lld selected" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "There are %1$lld files in %2$@, %3$lld selected"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Det finns %#@arg1@  i %2$@, %#@arg3@"
-          },
-          "substitutions" : {
-            "arg1" : {
-              "argNum" : 1,
-              "formatSpecifier" : "lld",
-              "variations" : {
-                "plural" : {
-                  "one" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "en fil"
-                    }
-                  },
-                  "other" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "%lld filer"
-                    }
-                  },
-                  "zero" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "inga filer"
-                    }
-                  }
-                }
-              }
-            },
-            "arg3" : {
-              "argNum" : 3,
-              "formatSpecifier" : "lld",
-              "variations" : {
-                "plural" : {
-                  "one" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "en vald"
-                    }
-                  },
-                  "other" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "%lld valda"
-                    }
-                  },
-                  "zero" : {
-                    "stringUnit" : {
-                      "state" : "translated",
-                      "value" : "inga valda"
-                    }
-                  }
-                }
-              }
-            }
           }
         }
       }
@@ -338,7 +416,8 @@
             "value" : "VetBackup"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "Vetvision will close in Windows if open" : {
       "localizations" : {
@@ -360,45 +439,11 @@
         }
       }
     },
-    "VM Key" : {
-      "localizations" : {
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "VM-nyckel"
-          }
-        }
-      }
+    "VMware Fusion.app" : {
+      "shouldTranslate" : false
     },
-    "VM Password" : {
-      "localizations" : {
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "VM-lösenord"
-          }
-        }
-      }
-    },
-    "VM User" : {
-      "localizations" : {
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "VM-användare"
-          }
-        }
-      }
-    },
-    "VMX Path" : {
-      "localizations" : {
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "VMX-sökväg"
-          }
-        }
-      }
+    "VMware.app" : {
+      "shouldTranslate" : false
     }
   },
   "version" : "1.1"

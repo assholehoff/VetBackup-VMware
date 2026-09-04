@@ -2,55 +2,62 @@
 //  FolderMonitor.swift
 //  VetBackup
 //
-//  Created by Anton Dahlén on 2025-12-07.
+//  Created by Anton Dahlén on 2026-08-28.
 //
 
 import Foundation
 
-class FolderMonitor {
+/*
+ All access and mutation of 'monitoredFolderFileDescriptor' and 'folderMonitorSource'
+ are strictly isolated to 'folderMonitorQueue' for thread-safety, and should not require
+ @MainActor isolation or main-thread access. All reads and writes to these properties
+ occur only within 'folderMonitorQueue.async { ... }' blocks.
+*/
+
+class FolderMonitor: @unchecked Sendable {
     // A FileDescriptor for the monitored directory
+    // Only accessed from within 'folderMonitorQueue'
     private var monitoredFolderFileDescriptor: CInt = -1
     // A DispatchSource to monitor a FileDescriptor created from that directory
+    // Only accessed from within 'folderMonitorQueue'
     private var folderMonitorSource: DispatchSourceFileSystemObject?
     // A DispatchQueue used for sending file changes in the directory
     private let folderMonitorQueue = DispatchQueue(label: "FolderMonitorQueue", attributes: .concurrent)
-    
+
     let url: URL
     var folderDidChange: (() -> Void)?
-    
+
     init(url: URL) {
         self.url = url
     }
-    
+
     func startMonitoring() {
-        guard folderMonitorSource == nil && monitoredFolderFileDescriptor == -1 else {
-            return
-        }
-        
-        // Open the folder referenced by the URL for monitoring only
-        monitoredFolderFileDescriptor = open(url.path(), O_EVTONLY)
-        
-        // Define a dispatch source monitoring the folder for additions, deletions and renamings
-        folderMonitorSource = DispatchSource.makeFileSystemObjectSource(fileDescriptor: monitoredFolderFileDescriptor, eventMask: .all, queue: folderMonitorQueue)
-        
-        // Define the block to call when a file change is detected
-        folderMonitorSource?.setEventHandler { [weak self] in
-            self?.folderDidChange?()
-        }
-        
-        // Define a cancel handler to ensure the directory is closed when the source is cancelled
-        folderMonitorSource?.setCancelHandler { [weak self] in
+        folderMonitorQueue.async { [weak self] in
             guard let self = self else { return }
-            close(self.monitoredFolderFileDescriptor)
-            self.monitoredFolderFileDescriptor = -1
-            self.folderMonitorSource = nil
+            guard self.folderMonitorSource == nil && self.monitoredFolderFileDescriptor == -1 else {
+                return
+            }
+            self.monitoredFolderFileDescriptor = open(self.url.path(), O_EVTONLY)
+            self.folderMonitorSource = DispatchSource.makeFileSystemObjectSource(
+                fileDescriptor: self.monitoredFolderFileDescriptor,
+                eventMask: .all,
+                queue: self.folderMonitorQueue
+            )
+            self.folderMonitorSource?.setEventHandler {
+                self.folderDidChange?()
+            }
+            self.folderMonitorSource?.setCancelHandler {
+                close(self.monitoredFolderFileDescriptor)
+                self.monitoredFolderFileDescriptor = -1
+                self.folderMonitorSource = nil
+            }
+            self.folderMonitorSource?.resume()
         }
-        
-        // Start monitoring the directory via the source
-        folderMonitorSource?.resume()
     }
-    
+
     func stopMonitoring() {
-        folderMonitorSource?.cancel()
+        folderMonitorQueue.async { [weak self] in
+            self?.folderMonitorSource?.cancel()
+        }
     }
 }
