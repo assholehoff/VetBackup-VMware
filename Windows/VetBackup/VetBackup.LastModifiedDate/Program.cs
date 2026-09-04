@@ -21,5 +21,6 @@ try {
     return 0;
 } catch (Exception ex) {
     Console.WriteLine($"Error: {ex.Message}");
+    Thread.Sleep(5000); // Wait for 5 seconds before exiting to allow the user to read the error message
     return 1;
 }
