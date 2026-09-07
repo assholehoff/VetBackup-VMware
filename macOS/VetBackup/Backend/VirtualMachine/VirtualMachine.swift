@@ -10,17 +10,6 @@ import Foundation
 import RegexBuilder
 import UserNotifications
 
-enum VirtualMachineError: Error {
-    case vmNotFound
-    case vmxFileNotFound
-    case vmDiskFileNotFound
-    case invalidKey
-    case invalidUsername
-    case invalidPassword
-    case vmOffline
-    case vmNotResponding
-}
-
 @MainActor
 public class VirtualMachine: ObservableObject {
     var url: URL
@@ -35,8 +24,16 @@ public class VirtualMachine: ObservableObject {
     @Published var backupOngoing: Bool = false
     @Published var dailyBackupTime: Date? { didSet { print("dailyBackupTime didSet") }}
     @Published var lastBackupDate: Date?
-    @Published var lastBackupAttempt: Bool?
-    @Published var lastDatabaseModifiedDate: Date?
+    @Published var lastBackupAttempt: Bool? {
+        didSet {
+            UserDefaults.standard.set(self.lastBackupDate, forKey: "lastBackupDate")
+        }
+    }
+    @Published var lastDatabaseModifiedDate: Date? {
+        didSet {
+            UserDefaults.standard.set(self.lastDatabaseModifiedDate, forKey: "lastDatabaseModifiedDate")
+        }
+    }
 
     var vmKey: String
     var vmUser: String
@@ -62,8 +59,8 @@ public class VirtualMachine: ObservableObject {
 
         self.backupFolderURL = settings.backupFolderURL
         self.dailyBackupTime = settings.dailyBackupTime
-        self.lastBackupDate = nil
-        self.lastDatabaseModifiedDate = nil
+        self.lastBackupDate = UserDefaults.standard.object(forKey: "lastBackupDate") as? Date
+        self.lastDatabaseModifiedDate = UserDefaults.standard.object(forKey: "lastDatabaseModifiedDate") as? Date
 
         self.vmKey = user.key
         self.vmUser = user.user
