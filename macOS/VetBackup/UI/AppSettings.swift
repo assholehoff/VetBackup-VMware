@@ -5,6 +5,7 @@
 //  Created by Anton Dahlén on 2026-08-29.
 //
 
+import AppKit
 import Combine
 import Foundation
 
@@ -169,9 +170,24 @@ final class AppSettings: ObservableObject {
             ))
         }
 
+        NSWorkspace.shared.notificationCenter.addObserver(
+            self,
+            selector: #selector(self.wakeuproutine(_:)),
+            name: NSWorkspace.didWakeNotification,
+            object: nil
+        )
+
         if self.dailyBackupEnabled, self.vm != nil {
             self.start()
         }
+    }
+
+    @objc func wakeuproutine(_ notification: NSNotification) {
+        guard self.dailyBackupEnabled else { return }
+        if self.nextBackupDate < .now {
+            Task { await self.vm?.backupIfNeeded() }
+        }
+        self.start()
     }
 
     func setup(using vm: VirtualMachine) {
