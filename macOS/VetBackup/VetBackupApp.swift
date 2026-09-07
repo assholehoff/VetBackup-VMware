@@ -34,5 +34,8 @@ struct VetBackupApp: App {
         Window("Diagnostics", id: "diagnostics") {
             DiagnosticsView()
         }
+        Window("Log", id: "log") {
+            LogView()
+        }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  LogTab.swift
+//  LogTabView.swift
 //  VetBackup
 //
 //  Created by Anton Dahlén on 2026-09-07.

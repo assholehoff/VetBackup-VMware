@@ -1,5 +1,5 @@
 //
-//  BackupResult.swift
+//  Error.swift
 //  VetBackup
 //
 //  Created by Anton Dahlén on 2026-09-06.
@@ -10,8 +10,8 @@ protocol Result: Sendable {}
 enum BackupResult: Result {
     case abort,
          fail,
-         success,
-         skip
+         skip,
+         success
 }
 
 enum VirtualMachineError: Error {
