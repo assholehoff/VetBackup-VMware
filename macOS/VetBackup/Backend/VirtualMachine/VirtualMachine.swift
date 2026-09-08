@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import os
 import RegexBuilder
 import UserNotifications
 
@@ -22,15 +23,17 @@ public class VirtualMachine: ObservableObject {
         didSet { self.updateLastBackupDateFromFolder() }
     }
     @Published var backupOngoing: Bool = false
-    @Published var dailyBackupTime: Date? { didSet { print("dailyBackupTime didSet") }}
+    @Published var dailyBackupTime: Date? { didSet { Log.backend.debug("VirtualMachine.dailyBackupTime.didSet()") }}
     @Published var lastBackupDate: Date?
     @Published var lastBackupAttempt: Bool? {
         didSet {
+            Log.backend.debug("VirtualMachine.lastBackupAttempt.didSet()")
             UserDefaults.standard.set(self.lastBackupDate, forKey: "lastBackupDate")
         }
     }
     @Published var lastDatabaseModifiedDate: Date? {
         didSet {
+            Log.backend.debug("VirtualMachine.lastDatabaseModifiedDate.didSet()")
             UserDefaults.standard.set(self.lastDatabaseModifiedDate, forKey: "lastDatabaseModifiedDate")
         }
     }
@@ -51,6 +54,7 @@ public class VirtualMachine: ObservableObject {
         paths: VMWindowsPaths,
         settings: VMSettings
     ) {
+        Log.backend.debug("VirtualMachine.init()")
         self.url = url
         self.name = String((url.lastPathComponent.removingPercentEncoding ?? url.lastPathComponent).dropLast(9))
         self.vmrun = run
@@ -78,6 +82,7 @@ public class VirtualMachine: ObservableObject {
     private func updateLastBackupDateFromFolder() {
         let files = listBackupFiles(in: self.backupFolderURL)
         guard !files.isEmpty, let foundDate = files.first?.date else {
+            Log.backend.error("VirtualMachine.updateLastBackupDateFromFolder() guard !files.isEmpty: failed")
             self.lastBackupDate = .distantPast
             return
         }
@@ -85,10 +90,12 @@ public class VirtualMachine: ObservableObject {
     }
 
     func backup() async -> Bool {
-        print("\(timeStamp()) VirtualMachine.backup() start")
+        Log.backend.info("VirtualMachine.backup() start")
         await MainActor.run {
             lastBackupAttempt = nil
             self.backupOngoing = true
+            Log.backend.debug("VirtualMachine.backup() reset .lastBackupAttempt to nil")
+            Log.backend.debug("VirtualMachine.backup() set .backupOngoing to true")
         }
 
         var result = false
@@ -126,6 +133,7 @@ public class VirtualMachine: ObservableObject {
         do {
             let (taskResult, output) = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<(Bool, String), Error>) in
                 DispatchQueue.global(qos: .userInitiated).async {
+                    let backendLog = Logger(subsystem: "com.ad.vetbackup", category: "backend")
                     let task = Process()
                     let pipe = Pipe()
 
@@ -149,6 +157,7 @@ public class VirtualMachine: ObservableObject {
                         let isOff = (output == offString)
                         continuation.resume(returning: (!isOff, output))
                     } catch {
+                        backendLog.error("VirtualMachine.backup() error: \(error)")
                         continuation.resume(throwing: error)
                     }
                 }
@@ -171,6 +180,7 @@ public class VirtualMachine: ObservableObject {
             }
         } catch {
             print("error: \(error)")
+            Log.backend.error("VirtualMachine.backup() error: \(error)")
             result = false
             await MainActor.run {
                 lastBackupAttempt = false
@@ -200,13 +210,15 @@ public class VirtualMachine: ObservableObject {
             UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [uuid])
         }
         print("\(timeStamp()) VirtualMachine.backup() -> \(result)")
+        result ? Log.backup.notice("backup process successful") : Log.backup.error("backup process failed")
         return result
     }
 
     func backupIfNeeded() async -> Bool {
-        print("\(timeStamp()) VirtualMachine.backupIfNeeded()")
-        // TODO: add some checks and specific returns (possibly throw errors)
-        guard self.modified() else { return false }
+        guard self.modified() else {
+            Log.backup.notice("database is unmodified, skipping backup")
+            return false
+        }
         return await self.backup()
     }
 
@@ -217,13 +229,18 @@ public class VirtualMachine: ObservableObject {
      * since that will trigger a backup on assumption of an empty backup folder.
      */
     func modified() -> Bool {
+        Log.backend.debug("VirtualMachine.modified()")
         // 1. if lastBackupDate is `nil` (meaning `backupFolder` is empty)
-        guard let lastBackup = self.lastBackupDate else { return true }
+        guard let lastBackup = self.lastBackupDate else {
+            Log.backend.debug("VirtualMachine.modified() guard let lastBackup failed")
+            return true
+        }
 
         // 2. is VM running → query VetBackup for exact time
         if let exactDate = self.vmDatabaseLastModifiedDate() {
             // no grace period needed since Vetvision is always closed on backup
             if exactDate > lastBackup {
+                Log.backend.debug("VirtualMachine.modified() exactDate successfully extracted")
                 return true
             }
         }
@@ -233,11 +250,13 @@ public class VirtualMachine: ObservableObject {
             // 10 minutes grace period since the VM is not closed on backup finish
             if modDate > lastBackup.addingTimeInterval(600) {
                 // 3. VM has been used, check database modified time
+                Log.backend.debug("VirtualMachine.modified() diskFile is recently modified")
                 return true
             }
         }
 
         // VM appears untouched since last backup → return false
+        Log.backend.debug("VirtualMachine.modified() VM looks untouched since last backup")
         return false
     }
 
@@ -246,6 +265,7 @@ public class VirtualMachine: ObservableObject {
     }
 
     func nextBackupDate() -> Date? {
+        Log.backend.debug("VirtualMachine.nextBackupDate()")
         guard let dailyBackupTime = self.dailyBackupTime else { return nil }
 
         var time = DateComponents()
@@ -262,6 +282,7 @@ public class VirtualMachine: ObservableObject {
     }
 
     func running() -> Bool {
+        Log.backend.debug("VirtualMachine.running()")
         let task = Process()
         let pipe = Pipe()
         var running = false
@@ -285,14 +306,16 @@ public class VirtualMachine: ObservableObject {
                 }
             }
         } catch {
-            print("error: \(error)")
+            Log.backend.error("VirtualMachine.running() error: \(error)")
         }
+        Log.backend.debug("VirtualMachine.running() -> \(running)")
         return running
     }
 
     func updateDatabaseLastModifiedDate() {
         guard let date = vmDatabaseLastModifiedDate(),
               date != self.lastDatabaseModifiedDate else { return }
+        Log.backend.debug("VirtualMachine.updateDatabaseLastModifiedDate()")
         self.lastDatabaseModifiedDate = date
     }
 
@@ -302,6 +325,7 @@ public class VirtualMachine: ObservableObject {
      * Executes `C:\Program Files\VetBackup\LastModifiedDate.exe` in the VM which outputs the date string into `.LastModifiedDate` in the BackupFolder.
      */
     func vmDatabaseLastModifiedDate() -> Date? {
+        Log.backend.debug("VirtualMachine.databaseLastModifiedDate()")
         guard self.running() else { return nil }
 
         let task = Process()
@@ -332,9 +356,14 @@ public class VirtualMachine: ObservableObject {
 
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyyMMdd-HHmmss"
-            if let date = dateFormatter.date(from: dateString) { return date } else { return nil }
+            if let date = dateFormatter.date(from: dateString) {
+                Log.backend.info("vmDatabaseLastModifiedDate() -> \(date.formatted(date: .numeric, time: .standard))")
+                return date
+            } else {
+                return nil
+            }
         } catch {
-            print("\(timeStamp()) VirtualMachine.vmDatabaseLastModifiedDate error: \(error.localizedDescription)")
+            Log.backend.error("VirtualMachine.vmDatabaseLastModifiedDate error: \(error.localizedDescription)")
             return nil
         }
     }

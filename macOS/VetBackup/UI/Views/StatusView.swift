@@ -5,6 +5,7 @@
 //  Created by Anton Dahlén on 2026-08-27.
 //
 
+import os
 import SwiftUI
 
 struct StatusView: View {
@@ -39,6 +40,8 @@ struct StatusView: View {
             }
             Button("Backup now") {
                 backupButtonDisabled = true
+                Log.app.info("user initiated backup")
+                Log.backup.notice("user initiated backup")
                 Task {
                     await AppSettings.shared.vm?.backup()
                 }

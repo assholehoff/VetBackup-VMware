@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import os
 
 func defaultDate() -> Date {
+    Log.backend.debug("defaultDate()")
     var components = DateComponents()
     components.year = 1958
     components.month = 6
@@ -20,6 +22,7 @@ func defaultDate() -> Date {
 }
 
 func registerUserDefaults() {
+    Log.backend.debug("registerUserDefaults()")
     UserDefaults.standard.register(defaults: [
         // NOTE: Paths internal to Windows in the Virtual Machine:
         "VM: cmd.exe path" : "C:\\Windows\\System32\\cmd.exe",

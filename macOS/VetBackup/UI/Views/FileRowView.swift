@@ -27,8 +27,13 @@ struct FileRowView: View {
                     .foregroundStyle(.secondary).frame(width: 20)
             }
         }
-        .onAppear { file.startMonitoring() }
+        .onAppear {
+            if !file.iCloudIsUploaded { file.startMonitoring() }
+        }
         .onDisappear { file.stopMonitoring() }
+        .onReceive(file.$iCloudIsUploaded) { newValue in
+            if newValue { file.stopMonitoring() }
+        }
         .onReceive(file.$size) { _ in
             fileSizeString = file.sizeString()
         }

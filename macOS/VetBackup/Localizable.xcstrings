@@ -111,6 +111,16 @@
         }
       }
     },
+    "Backup if needed" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Säkerhetskopiera vid behov"
+          }
+        }
+      }
+    },
     "Backup in progress" : {
       "extractionState" : "manual",
       "localizations" : {

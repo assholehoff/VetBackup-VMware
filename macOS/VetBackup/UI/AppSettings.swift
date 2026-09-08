@@ -8,6 +8,7 @@
 import AppKit
 import Combine
 import Foundation
+import os
 
 /**
  * Class for use in the SettingsView. Validates new settings and updates VirtualMachine accordingly.
@@ -15,6 +16,7 @@ import Foundation
 final class AppSettings: ObservableObject {
     // User's selected Backup Folder where all the .zip archives end up
     @Published var backupFolderURL: URL { didSet {
+        Log.app.debug("AppSettings.backupFolderURL.didSet()")
         UserDefaults.standard.set(self.backupFolderURL, forKey: "BackupFolder URL")
         Task { @MainActor in
             await self.bf.setup(url: self.backupFolderURL)
@@ -29,6 +31,7 @@ final class AppSettings: ObservableObject {
     @Published var nextBackupDate: Date = .distantPast
 
     @Published var dailyBackupTime: Date { didSet {
+        Log.app.debug("AppSettings.dailyBackupTime.didSet()")
         UserDefaults.standard.set(self.dailyBackupTime, forKey: "DailyBackupTime")
         guard self.vm != nil else { return }
         if self.vm?.dailyBackupTime != self.dailyBackupTime {
@@ -42,6 +45,7 @@ final class AppSettings: ObservableObject {
     }}
 
     @Published var dailyBackupEnabled: Bool { didSet {
+        Log.app.debug("AppSettings.dailyBackupEnabled.didSet()")
         UserDefaults.standard.set(self.dailyBackupEnabled, forKey: "DailyBackupEnabled")
         guard self.vm != nil else { return }
         if self.dailyBackupEnabled {
@@ -53,6 +57,7 @@ final class AppSettings: ObservableObject {
 
     // VMware Fusion.app -- contains the `vmrun` command
     @Published var vmwareFusionAppURL: URL { didSet {
+        Log.app.debug("AppSettings.vmwareFusionAppURL.didSet()")
         UserDefaults.standard.set(self.vmwareFusionAppURL, forKey: "VMwareFusion.app URL")
         self.vmrunURL = createVmrunURL(from: self.vmwareFusionAppURL)
         guard self.vm != nil else { return }
@@ -61,6 +66,7 @@ final class AppSettings: ObservableObject {
 
     // VirtualMachine.vmwarevm bundle -- contains the vmx file and the disk file
     @Published var vmBundleURL: URL { didSet {
+        Log.app.debug("AppSettings.vmBundleURL.didSet()")
         UserDefaults.standard.set(self.vmBundleURL, forKey: "VirtualMachine URL")
         guard self.vm != nil else { return }
         if self.vm?.url != self.vmBundleURL {
@@ -70,6 +76,7 @@ final class AppSettings: ObservableObject {
 
     // User's username for the VM -- needed to use `vmrun`
     @Published var vmUser: String = "" { didSet {
+        Log.app.debug("AppSettings.vmUser.didSet()")
         UserDefaults.standard.set(self.vmUser, forKey: "VM: user")
         guard self.vm != nil else { return }
         if self.vm?.vmUser != self.vmUser {
@@ -79,6 +86,7 @@ final class AppSettings: ObservableObject {
 
     // The encryption key string for the VM -- needed to use `vmrun`
     @Published var vmKey: String = "" { didSet {
+        Log.app.debug("AppSettings.vmKey.didSet()")
         UserDefaults.standard.set(self.vmKey, forKey: "VM: key")
         guard self.vm != nil else { return }
         if self.vm?.vmKey != self.vmKey {
@@ -88,6 +96,7 @@ final class AppSettings: ObservableObject {
 
     // User's password for the VM -- needed to use `vmrun`
     @Published var vmPasswd: String = "" { didSet {
+        Log.app.debug("AppSettings.vmPasswd.didSet()")
         Task { @MainActor in
             await updateKeychain(password: self.vmPasswd, account: "VirtualMachine password")
         }
@@ -113,9 +122,11 @@ final class AppSettings: ObservableObject {
     @Published private(set) var vmIsReady: Bool = false
 
     init() {
+        Log.app.debug("AppSettings.init()")
         // `BackupFolder URL` RW access
         var backupFolderURL = URL(string: "file:///")!
         if let potentialURL = UserDefaults.standard.url(forKey: "BackupFolder URL") {
+            Log.app.debug("AppSettings.init() successfully resolved \"BackupFolder URL\" from UserDefaults!")
             backupFolderURL = potentialURL
         }
         self.backupFolderURL = backupFolderURL
@@ -123,17 +134,16 @@ final class AppSettings: ObservableObject {
         // `VMwareFusion.app URL` RO access
         var vmwareFusionURL = URL(string: "file:///")!
         if let potentialURL = UserDefaults.standard.url(forKey: "VMwareFusion.app URL") {
+            Log.app.debug("AppSettings.init() successfully resolved \"VMwareFusion.app URL\" from UserDefaults!")
             vmwareFusionURL = potentialURL
         }
         self.vmwareFusionAppURL = vmwareFusionURL
-        self.vmrunURL = vmwareFusionURL
-            .appending(path: "Contents")
-            .appending(path: "Public")
-            .appending(path: "vmrun")
+        self.vmrunURL = createVmrunURL(from: vmwareFusionURL)
         
         // `VirtualMachine URL` RO access
         var virtualMachineURL = URL(string: "file:///")!
         if let potentialURL = UserDefaults.standard.url(forKey: "VirtualMachine URL") {
+            Log.app.debug("AppSettings.init() successfully resolved \"VirtualMachine URL\" from UserDefaults!")
             virtualMachineURL = potentialURL
         }
         self.vmBundleURL = virtualMachineURL
@@ -142,18 +152,22 @@ final class AppSettings: ObservableObject {
         self.dailyBackupEnabled = UserDefaults.standard.bool(forKey: "DailyBackupEnabled")
         
         if let user = UserDefaults.standard.string(forKey: "VM: user") {
+            Log.app.debug("AppSettings.init() successfully resolved \"VM: user\" from UserDefaults!")
             self.vmUser = user
         }
         
         if let key = UserDefaults.standard.string(forKey: "VM: key") {
+            Log.app.debug("AppSettings.init() successfully resolved \"VM: key\" from UserDefaults!")
             self.vmKey = key
         }
         
         if let password = loadKeychainValue("VirtualMachine password") {
+            Log.app.debug("AppSettings.init() successfully resolved \"VM: password\" from UserDefaults!")
             self.vmPasswd = password
         }
 
         if checkFields() {
+            Log.app.debug("AppSettings.init() checkFields passed, assembling VM instance")
             setup(using: VirtualMachine(
                 url: self.vmBundleURL,
                 run: self.vmrunURL,
@@ -178,19 +192,23 @@ final class AppSettings: ObservableObject {
         )
 
         if self.dailyBackupEnabled, self.vm != nil {
+            Log.app.debug("AppSettings.init() starting daily backup timer")
             self.start()
         }
     }
 
     @objc func wakeuproutine(_ notification: NSNotification) {
+        Log.app.debug("AppSettings.wakeuproutine() received NSWorkspace.didWakeNotification")
         guard self.dailyBackupEnabled else { return }
         if self.nextBackupDate < .now {
+            Log.app.info("AppSettings.wakeuproutine() backup time passed while asleep! initiate backup routine...")
             Task { await self.vm?.backupIfNeeded() }
         }
         self.start()
     }
 
     func setup(using vm: VirtualMachine) {
+        Log.app.debug("AppSettings.setup(using: VirtualMachine)")
         self.backupFolderURL = vm.backupFolderURL
         self.dailyBackupTime = vm.dailyBackupTime ?? defaultDate()
         self.vmBundleURL = vm.url
@@ -204,14 +222,15 @@ final class AppSettings: ObservableObject {
 
         self.vm?.$lastBackupDate
             .sink { value in
+                Log.app.debug("AppSettings.vm?.$lastBackupDate.sink()")
                 guard let value else { return }
-                print("AppSettings.vm?.$lastBackupDate.sink updated .lastBackupDate")
                 self.lastBackupDate = value
             }
             .store(in: &self.subscriptions)
 
         self.vm?.$backupOngoing
             .sink { value in
+                Log.app.debug("AppSettings.vm?.$backupOngoing.sink()")
                 self.backupOngoing = value
                 if self.backupOngoing {
                     self.canBackup = false
@@ -229,6 +248,7 @@ final class AppSettings: ObservableObject {
             .compactMap { $0 }      // ignore `nil` folders
             .flatMap { $0.$files }  // for each new folder, observe its $files
             .sink { files in
+                Log.app.debug("AppSettings.bf.$folder.sink()")
                 if let date = files.first?.date {
                     self.lastBackupDate = date
                 }
@@ -237,12 +257,13 @@ final class AppSettings: ObservableObject {
     }
 
     func start() {
-        print("\(timeStamp()) AppSettings.start()")
+        Log.app.debug("AppSettings.start()")
         self.nextBackupDate = vm?.nextBackupDate() ?? .distantPast
         schedulerTask?.cancel()
-        if let time = vm?.dailyBackupTime {
+        if let _ = vm?.dailyBackupTime {
             schedulerTask = Task { [weak self] in
                 while !Task.isCancelled {
+                    Log.app.info("AppSettings.schedulerTask fire!")
                     guard let self else { return }
                     if let next = vm?.nextBackupDate() {
                         try? await Task.sleep(until: .now.advanced(by: .seconds(next.timeIntervalSinceNow)), clock: .continuous)
@@ -255,21 +276,19 @@ final class AppSettings: ObservableObject {
     }
 
     func stop() {
-        print("\(timeStamp()) AppSettings.stop()")
+        Log.app.debug("AppSettings.stop()")
         self.nextBackupDate = .distantPast
         schedulerTask?.cancel()
         schedulerTask = nil
     }
 
     private func checkFields() -> Bool {
+        Log.app.debug("AppSettings.checkFields()")
         return self.vmUser != "" && self.vmKey != "" && self.vmPasswd != ""
     }
 
-    private func createVmrunURL(from url: URL) -> URL {
-        url.appending(path: "Contents/Public/vmrun")
-    }
-
     private func loadKeychainValue(_ account: String) -> String? {
+        Log.app.debug("AppSettings.loadKeychainValue()")
         do {
             let data = try KeychainInterface.shared.readPassword(service: "com.ad.vetbackup", account: account)
             let value = String(data: data, encoding: .utf8)
@@ -282,6 +301,7 @@ final class AppSettings: ObservableObject {
     }
 
     private func updateKeychain(password: String, account: String) async {
+        Log.app.debug("AppSettings.updateKeychainPassword(password:account:)")
         guard password != "" else { return }
         do {
             try KeychainInterface.shared.update(password: password.data(using: .utf8)!, service: "com.ad.vetbackup", account: account)
@@ -289,12 +309,12 @@ final class AppSettings: ObservableObject {
             do {
                 try KeychainInterface.shared.save(password: password.data(using: .utf8)!, service: "com.ad.vetbackup", account: account)
             } catch {
-                print("\(timeStamp()) AppSettings.updateKeychain: failed to update Keychain!")
-                print("\(timeStamp()) KeychainInterface.shared.save threw exception: \(error.localizedDescription)")
+                Log.app.debug("AppSettings.updateKeychain(password:account:) failed to update Keychain")
+                Log.app.error("AppSettings.updateKeychain(password:account:) error: \(error)")
             }
         } catch {
-            print("\(timeStamp()) AppSettings.updateKeychain: failed to update Keychain!")
-            print("KeychainInterface.shared.update threw exception: \(error.localizedDescription)")
+            Log.app.debug("AppSettings.updateKeychain(password:account:) failed to update Keychain")
+            Log.app.error("AppSettings.updateKeychain(password:account:) error: \(error)")
         }
     }
 }

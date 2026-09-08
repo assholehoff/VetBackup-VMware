@@ -5,6 +5,7 @@
 //  Created by Anton Dahlén on 2026-08-29.
 //
 
+import os
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -181,9 +182,11 @@ struct SetupView: View {
             }
         }
         .onAppear {
+            Log.app.info("showing SetupView()")
             AppUIState.shared.showingSetupWindow = true
         }
         .onDisappear {
+            Log.app.info("disappearing SetupView()")
             AppUIState.shared.showingSetupWindow = false
         }
     }

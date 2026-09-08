@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import os
 import System
 
 public class BackupFile: File, ObservableObject {
@@ -23,6 +24,7 @@ public class BackupFile: File, ObservableObject {
     private var monitorTask: Task<Void, Never>?
 
     public init(url: URL) {
+        Log.backend.debug("BackupFile.init()")
         let attributes = try? FileManager.default.attributesOfItem(atPath: url.path(percentEncoded: false))
         self.date = getDate(from: url.lastPathComponent)
         self.size = attributes?[FileAttributeKey.size] as? Int64 ?? 0
@@ -50,6 +52,7 @@ public class BackupFile: File, ObservableObject {
      * Defaults to `(size: 0, uploaded: false, uploading: false)`
      */
     private func fetchResourceValues() async -> (size: Int64, uploaded: Bool, uploading: Bool) {
+        Log.backend.debug("BackupFile.fetchResourceValues()")
         var sizeInt64: Int64 = 0
         var uploaded: Bool = false
         var uploading: Bool = false
@@ -74,7 +77,7 @@ public class BackupFile: File, ObservableObject {
     }
 
     override public func refreshAttributes() -> Bool {
-        print("\(timeStamp()) \(self.name).refreshAttributes()")
+        Log.backend.debug("BackupFile.refreshAttributes()")
         var somethingChanged: Bool = false
         // TODO: implement .lanUploaded and .lanIsUploading to FreeBSD server
         let keys: Set<URLResourceKey> = [
@@ -124,11 +127,11 @@ public class BackupFile: File, ObservableObject {
                 }
             }
         }
-        print("\(timeStamp()) \(self.name).refreshAttributes() -> \(somethingChanged)")
         return somethingChanged
     }
 
     public func sizeString() -> String {
+        Log.backend.debug("BackupFile.sizeString()")
         let bcf = ByteCountFormatter()
         bcf.allowedUnits = [.useAll]
         bcf.countStyle = .file
@@ -142,6 +145,7 @@ public class BackupFile: File, ObservableObject {
      * These are the two keys associated with **iCloud** upload status.
      */
     public func startMonitoring() {
+        Log.backend.debug("BackupFile.startMonitoring()")
         monitorTask?.cancel()
 
         monitorTask = Task.detached(priority: .background) { [weak self] in
@@ -166,6 +170,7 @@ public class BackupFile: File, ObservableObject {
     }
 
     public func stopMonitoring() {
+        Log.backend.debug("BackupFile.stopMonitoring()")
         monitorTask?.cancel()
         monitorTask = nil
     }

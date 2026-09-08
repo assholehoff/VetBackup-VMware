@@ -5,11 +5,13 @@
 //  Created by Anton Dahlén on 2026-08-27.
 //
 
+import os
 import SwiftUI
 
 @main
 struct VetBackupApp: App {
     init() {
+        Log.app.debug("VetBackupApp.init()")
         registerUserDefaults()
     }
     var body: some Scene {
@@ -33,9 +35,6 @@ struct VetBackupApp: App {
         }
         Window("Diagnostics", id: "diagnostics") {
             DiagnosticsView()
-        }
-        Window("Log", id: "log") {
-            LogView()
         }
     }
 }

@@ -8,6 +8,7 @@
 import AppKit
 import Combine
 import Foundation
+import os
 
 final class AppUIState {
     @Published var showingArchiveWindow: Bool = false { didSet { checkWindowsAndSetActivationPolicy() }}
@@ -27,12 +28,15 @@ final class AppUIState {
         guard NSApp.activationPolicy() != policy else { return }
         switch policy {
         case .accessory:
+            Log.app.debug("set NSApplication.ActivationPolicy to .accessory")
             NSApp.setActivationPolicy(.accessory)
             NSApp.deactivate()
         case .regular:
+            Log.app.debug("set NSApplication.ActivationPolicy to .regular")
             NSApp.setActivationPolicy(.regular)
             NSApp.activate(ignoringOtherApps: true)
         default:
+            Log.app.debug("AppUIState.setActivationPolicy policy switch defaulted! this should not be possible!")
             return
         }
     }

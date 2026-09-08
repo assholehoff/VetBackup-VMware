@@ -27,6 +27,7 @@ struct DiagnosticsView: View {
     @State var vmLastDateString: String = ""
     @State var vmModifiedString: String = ""
     @State var vmNextDateString: String = ""
+    @State var backupButtonDisabled: Bool = false
     @State var vmButtonDisabled: Bool = AppSettings.shared.vm == nil
 
     var body: some View {
@@ -193,6 +194,21 @@ struct DiagnosticsView: View {
                             }
                         }
                         .disabled(vmButtonDisabled)
+                        if vmNextDateString != "" {
+                            Text(vmNextDateString)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    VStack {
+                        Button("Backup if needed", systemImage: "archivebox") {
+                            backupButtonDisabled = true
+                            Task {
+                                await AppSettings.shared.vm?.backupIfNeeded()
+                                backupButtonDisabled = false
+                            }
+                        }
+                        .disabled(vmButtonDisabled || backupButtonDisabled)
                         if vmNextDateString != "" {
                             Text(vmNextDateString)
                                 .font(.footnote)

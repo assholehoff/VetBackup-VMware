@@ -8,6 +8,12 @@
 import Foundation
 
 /**
+ * Return a URL with `Contents/Public/vmrun` appended to its path
+ */
+func createVmrunURL(from url: URL) -> URL {
+    url.appending(path: "Contents/Public/vmrun")
+}
+/**
  * URL.lastPathComponent.removingPercentEncoding ?? URL.lastPathComponent
  */
 func lastPathString(_ url: URL) -> String {
