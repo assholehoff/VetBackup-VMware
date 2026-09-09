@@ -7,7 +7,17 @@
 
 import Foundation
 
+/**
+ * The `vmx` file contains the settings for a VMware Fusion virtual machine. This file is parsed for the name of the disk file, so that can be used for imprecise modification checks when the VM is offline.
+ */
 public class VMXFile: File {
+    /**
+     * Returns a URL for the disk file.
+     *
+     * If the key `nvme0:0.fileName` can't be found it defaults to `Virtual Disk-000001-s001.vmdk`.
+     *
+     * **TODO: make this more robust.** Consider throwing or returning `nil` when no file can be reliably established.
+     */
     func diskFileUrl() -> URL {
         let diskFileUrl: URL
         if let diskFileName = valueFor(key: "nvme0:0.fileName") {
@@ -18,10 +28,12 @@ public class VMXFile: File {
         return diskFileUrl
     }
 
+    /** Return the path with any percent encoding removed. */
     func path() -> String {
         return self.url.path(percentEncoded: false)
     }
 
+    /** Return the string value for the key string, or `nil` if not found.  */
     func valueFor(key: String) -> String? {
         try? parseFileFor(key: key, in: self.url)
     }
@@ -44,7 +56,15 @@ public class VMXFile: File {
     }
 }
 
-func findVmxFile(in url: URL) -> VMXFile? {
+/**
+ * The `vmx` for the `vmwarevm` bundle.
+ *
+ * Parse folder at `url` and return a `VMXFile` representing
+ * the `vmx` with the same base name as the `vmwarevm` bundle supplied in `url`.
+ * Or, _the first_ `vmx` it finds if none with the same base name is found.
+ * Returns `nil` if **no** `vmx` can be found.
+ */
+func findVmxFile(inBundle url: URL) -> VMXFile? {
     // extract VM name by removing `.vmwarevm` from lastPathComponent
     let vmxFileName: String = (url.lastPathComponent.removingPercentEncoding ?? url.lastPathComponent).dropLast(9).appending(".vmx")
     if FileManager.default.fileExists(atPath: url.appending(path: vmxFileName).path(percentEncoded: false)) {

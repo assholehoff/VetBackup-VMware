@@ -15,6 +15,7 @@ final class BFProvider: ObservableObject {
     @Published var isLoaded: Bool = false
     @Published var folder: BackupFolder?
 
+    /** Setup the folder monitor */
     func setup(url: URL) async {
         guard url.absoluteString != "file:///" else { return }
         print("BFProvider.setup()")

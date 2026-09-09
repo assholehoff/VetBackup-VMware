@@ -8,19 +8,25 @@
 import Foundation
 
 /**
- * Return a URL with `Contents/Public/vmrun` appended to its path
+ * The URL with `Contents/Public/vmrun` appended to its path
  */
-func createVmrunURL(from url: URL) -> URL {
-    url.appending(path: "Contents/Public/vmrun")
+func createVmrunURL(fromApp url: URL) -> URL {
+    url
+        .appending(path: "Contents")
+        .appending(path: "Public")
+        .appending(path: "vmrun")
 }
 /**
- * URL.lastPathComponent.removingPercentEncoding ?? URL.lastPathComponent
+ * `lastPathComponent` with any percent encoding removed.
  */
 func lastPathString(_ url: URL) -> String {
     if let str = url.lastPathComponent.removingPercentEncoding { return str }
     return url.lastPathComponent
 }
 
+/**
+ * The URL found in supplied `NSNotification`, or `nil`.
+ */
 func nsnotificationToURL(_ notification: NSNotification) -> URL? {
     if let potentialInfo = notification.userInfo {
         let info = potentialInfo as [AnyHashable: Any]
@@ -31,6 +37,9 @@ func nsnotificationToURL(_ notification: NSNotification) -> URL? {
     return nil
 }
 
+/**
+ * A Swift `URL` from an ObjC `NSURL`, or `nil`.
+ */
 func urlFrom(nsurl: NSURL) -> URL? {
     guard let nsstring = nsurl.absoluteString else {
         return nil

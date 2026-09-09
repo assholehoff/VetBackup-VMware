@@ -7,10 +7,13 @@
 
 import Foundation
 
+/** Extract a Date from a String with the format `yyyyMMdd-HHmmss` */
 func getDate(from name: String) -> Date {
+    // TODO: should probably be optional with `nil`
     getDate(from: name, format: "yyyyMMdd-HHmmss")
 }
 
+/** Extract a Date from a String with supplied format String. */
 func getDate(from name: String, format: String) -> Date {
     let df = DateFormatter()
     df.dateFormat = format
@@ -41,6 +44,7 @@ func escapeRegexChars(in str: String) -> String {
     return string
 }
 
+/** Create a String for finding a date with **regex** */
 func createDateRegexStringFor(format: String) -> String {
     var string: String = format
     string = string.replacingOccurrences(of: "yyyy", with: "\\d{4}")
@@ -52,6 +56,7 @@ func createDateRegexStringFor(format: String) -> String {
     return string
 }
 
+/** Create a **Regex** for finding a date in a String */
 func createDateRegex(format: String, prefix: String, suffix: String) -> Regex<AnyRegexOutput> {
     let dateString: String = createDateRegexStringFor(format: escapeRegexChars(in: format))
     let prefixString: String = escapeRegexChars(in: prefix)

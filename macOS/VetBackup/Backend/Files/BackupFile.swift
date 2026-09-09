@@ -10,7 +10,13 @@ import Foundation
 import os
 import System
 
+/**
+ * BackupFile is a class representing a `zip` archive with the database from a certain date. This date is derived from the file name rather than metadata (which is also tracked).
+ *
+ * BackupFile has a monitor for its **URLResourceKeyValues** regarding _size_ and _iCloud upload status._.
+ */
 public class BackupFile: File, ObservableObject {
+    // TODO: refactor to use @Observable rather than ObservableObject
     let format: String = "yyyyMMdd-HHmmss"
     let date: Date // NOTE: this is the date for the database backup, which may differ from modified/created
 
@@ -130,6 +136,7 @@ public class BackupFile: File, ObservableObject {
         return somethingChanged
     }
 
+    /** Returns a human friendly formatted string with the size of the file. */
     public func sizeString() -> String {
         Log.backend.debug("BackupFile.sizeString()")
         let bcf = ByteCountFormatter()

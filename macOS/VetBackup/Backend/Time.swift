@@ -7,6 +7,7 @@
 
 import Foundation
 
+/** Convenient when printing to stdout */
 func timeStamp() -> String {
     Date().formatted(date: .omitted, time: .standard) + ":"
 }

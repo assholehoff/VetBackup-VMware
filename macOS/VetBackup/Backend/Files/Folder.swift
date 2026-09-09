@@ -8,6 +8,9 @@
 import Combine
 import Foundation
 
+/**
+ * Represents a folder in the file system. Monitors for changes to its content.
+ */
 public class Folder: ObservableObject {
     @Published var files: Set<File> = []
 

@@ -7,13 +7,14 @@
 
 import Foundation
 
-/*
- All access and mutation of 'monitoredFolderFileDescriptor' and 'folderMonitorSource'
- are strictly isolated to 'folderMonitorQueue' for thread-safety, and should not require
- @MainActor isolation or main-thread access. All reads and writes to these properties
- occur only within 'folderMonitorQueue.async { ... }' blocks.
-*/
-
+/**
+ * Monitor a folder in the file system for changes to its contents.
+ *
+ * All access and mutation of 'monitoredFolderFileDescriptor' and 'folderMonitorSource'
+ * are strictly isolated to 'folderMonitorQueue' for thread-safety, and should not require
+ * @MainActor isolation or main-thread access. All reads and writes to these properties
+ * occur only within 'folderMonitorQueue.async { ... }' blocks.
+ */
 class FolderMonitor: @unchecked Sendable {
     // A FileDescriptor for the monitored directory
     // Only accessed from within 'folderMonitorQueue'

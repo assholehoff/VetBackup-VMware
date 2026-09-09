@@ -8,6 +8,9 @@
 import Combine
 import Foundation
 
+/**
+ * The class representing the folder where the backup archives are stored. Subscribes to changes in this folder and assembles an observable array of `[BackupFile]`. Only includes files fitting the naming pattern specified for the backups.
+ */
 class BackupFolder: ObservableObject {
     @Published var files: [BackupFile] = []
 
@@ -41,6 +44,9 @@ class BackupFolder: ObservableObject {
         self.files = listBackupFiles(in: self.url)
     }
 
+    /**
+     * Refresh the metadata for files not fully uploaded to iCloud.
+     */
     private func refreshUploadingFiles() {
         print("\(timeStamp()) BackupFolder.refreshUploadingFiles()")
         let uploadingFiles = files.filter { !$0.iCloudIsUploaded || $0.iCloudIsUploading }
@@ -77,7 +83,7 @@ class BackupFolder: ObservableObject {
 }
 
 /**
- * Returns an array with the files sorted by date, newest first.
+ * Returns an array of `[BackupFile]` with the files sorted by date, `>`.
  */
 func listBackupFiles(in url: URL) -> [BackupFile] {
     let keys: [URLResourceKey] = [

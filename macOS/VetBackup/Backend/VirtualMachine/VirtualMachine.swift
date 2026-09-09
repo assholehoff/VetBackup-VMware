@@ -11,26 +11,39 @@ import os
 import RegexBuilder
 import UserNotifications
 
+/**
+ * The VirtualMachine class is the interface to **VMware Fusion** and its VM through `vmrun` processes.
+ */
 @MainActor
 public class VirtualMachine: ObservableObject {
+    /** The URL to the `.vmwarevm` bundle. This is where the `vmx` and `diskFile` is found. */
     var url: URL
     var name: String
     var vmrun: URL
     var vmxFile: VMXFile
     var diskFile: File
 
+    /**
+     * The user specified folder where the backups are stored.
+     * This is also the folder where the Windows utilities output temporary files.
+     */
     @Published var backupFolderURL: URL {
         didSet { self.updateLastBackupDateFromFolder() }
     }
     @Published var backupOngoing: Bool = false
     @Published var dailyBackupTime: Date? { didSet { Log.backend.debug("VirtualMachine.dailyBackupTime.didSet()") }}
+    /** The date the latest backup file reflects. */
     @Published var lastBackupDate: Date?
+    /** If the last attempt failed, this is `false`.  */
     @Published var lastBackupAttempt: Bool? {
+        // TODO: implement result enum
+        //       i.e. `fail`, `success` and `skip`
         didSet {
             Log.backend.debug("VirtualMachine.lastBackupAttempt.didSet()")
             UserDefaults.standard.set(self.lastBackupDate, forKey: "lastBackupDate")
         }
     }
+    /** The date `Database.fdb` was modified in Windows, supplied by the utility in the VM */
     @Published var lastDatabaseModifiedDate: Date? {
         didSet {
             Log.backend.debug("VirtualMachine.lastDatabaseModifiedDate.didSet()")
@@ -58,7 +71,7 @@ public class VirtualMachine: ObservableObject {
         self.url = url
         self.name = String((url.lastPathComponent.removingPercentEncoding ?? url.lastPathComponent).dropLast(9))
         self.vmrun = run
-        self.vmxFile = findVmxFile(in: url)!
+        self.vmxFile = findVmxFile(inBundle: url)!
         self.diskFile = File(url: self.vmxFile.diskFileUrl(), created: nil)
 
         self.backupFolderURL = settings.backupFolderURL
@@ -89,6 +102,11 @@ public class VirtualMachine: ObservableObject {
         self.lastBackupDate = foundDate
     }
 
+    /**
+     * The actual backup routine. Any verification is up to the caller.
+     *
+     * Uses `vmrun` to run a utility in Windows that exports the database as a `zip` to the folder specified in `backupFolderURL`.
+     */
     func backup() async -> Bool {
         Log.backend.info("VirtualMachine.backup() start")
         await MainActor.run {
@@ -214,6 +232,10 @@ public class VirtualMachine: ObservableObject {
         return result
     }
 
+    /**
+     * Conditionally backup the database.
+     * If the database is determined to be modified since last backup, trigger the backup routine.
+     */
     func backupIfNeeded() async -> Bool {
         guard self.modified() else {
             Log.backup.notice("database is unmodified, skipping backup")
@@ -225,7 +247,7 @@ public class VirtualMachine: ObservableObject {
     /**
      * Returns **true** if database in VM is determined to have been modified since last backup.
      *
-     * Note: this should **never** be called before `lastBackupDate` has been set,
+     * Note: this shouldn't be called before `lastBackupDate` has been set,
      * since that will trigger a backup on assumption of an empty backup folder.
      */
     func modified() -> Bool {
@@ -260,10 +282,9 @@ public class VirtualMachine: ObservableObject {
         return false
     }
 
-    func setBackupTime(time: Date) {
-        self.dailyBackupTime = time
-    }
-
+    /**
+     * Return the next time in the future the clock strikes `dailyBackupTime`. Either **today** or **tomorrow**.
+     */
     func nextBackupDate() -> Date? {
         Log.backend.debug("VirtualMachine.nextBackupDate()")
         guard let dailyBackupTime = self.dailyBackupTime else { return nil }
@@ -277,10 +298,12 @@ public class VirtualMachine: ObservableObject {
         return next(time: Calendar.current.date(from: time)!)
     }
 
+    /** The path to the VM bundle, excluding the trailing `/` */
     func path() -> String {
         String(self.url.path(percentEncoded: false).dropLast(1))
     }
 
+    /** Returns **true** if the VM is running in VMware Fusion.  */
     func running() -> Bool {
         Log.backend.debug("VirtualMachine.running()")
         let task = Process()
@@ -312,9 +335,14 @@ public class VirtualMachine: ObservableObject {
         return running
     }
 
+    /** Updates the stored exact date `Database.fdb` was modified (`.lastDatabaseModifiedDate`). Needs `running()` to return **true** to update, otherwise sets date to `nil`.  */
     func updateDatabaseLastModifiedDate() {
         guard let date = vmDatabaseLastModifiedDate(),
-              date != self.lastDatabaseModifiedDate else { return }
+              date != self.lastDatabaseModifiedDate else {
+            Log.backend.debug("VirtualMachine.updateDatabaseLastModifiedDate() guard failed (not running?) set date to nil")
+            self.lastDatabaseModifiedDate = nil
+            return
+        }
         Log.backend.debug("VirtualMachine.updateDatabaseLastModifiedDate()")
         self.lastDatabaseModifiedDate = date
     }

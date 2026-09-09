@@ -14,7 +14,7 @@ import os
  * Class for use in the SettingsView. Validates new settings and updates VirtualMachine accordingly.
  */
 final class AppSettings: ObservableObject {
-    // User's selected Backup Folder where all the .zip archives end up
+    // User selected Backup Folder where all the .zip archives end up
     @Published var backupFolderURL: URL { didSet {
         Log.app.debug("AppSettings.backupFolderURL.didSet()")
         UserDefaults.standard.set(self.backupFolderURL, forKey: "BackupFolder URL")
@@ -59,7 +59,7 @@ final class AppSettings: ObservableObject {
     @Published var vmwareFusionAppURL: URL { didSet {
         Log.app.debug("AppSettings.vmwareFusionAppURL.didSet()")
         UserDefaults.standard.set(self.vmwareFusionAppURL, forKey: "VMwareFusion.app URL")
-        self.vmrunURL = createVmrunURL(from: self.vmwareFusionAppURL)
+        self.vmrunURL = createVmrunURL(fromApp: self.vmwareFusionAppURL)
         guard self.vm != nil else { return }
         self.vm?.vmrun = self.vmrunURL
     }}
@@ -138,7 +138,7 @@ final class AppSettings: ObservableObject {
             vmwareFusionURL = potentialURL
         }
         self.vmwareFusionAppURL = vmwareFusionURL
-        self.vmrunURL = createVmrunURL(from: vmwareFusionURL)
+        self.vmrunURL = createVmrunURL(fromApp: vmwareFusionURL)
         
         // `VirtualMachine URL` RO access
         var virtualMachineURL = URL(string: "file:///")!

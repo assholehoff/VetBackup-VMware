@@ -7,6 +7,9 @@
 
 import Foundation
 
+/**
+ * Represents a unique file in the file system.
+ */
 public class File: Hashable, Identifiable {
     public let id: String
     public var url: URL

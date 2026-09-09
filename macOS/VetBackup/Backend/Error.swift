@@ -8,6 +8,7 @@
 protocol Result: Sendable {}
 
 enum BackupResult: Result {
+    // TODO: implement this for VirtualMachine
     case abort,
          fail,
          skip,

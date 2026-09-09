@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/** Draw a border along edges of a View. */
 struct EdgeBorder: Shape {
     var edges: [Edge]
 
