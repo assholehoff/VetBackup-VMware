@@ -252,13 +252,13 @@ public class VirtualMachine: ObservableObject {
      */
     func modified() -> Bool {
         Log.backend.debug("VirtualMachine.modified()")
-        // 1. if lastBackupDate is `nil` (meaning `backupFolder` is empty)
+        /** 1. if lastBackupDate is `nil`, `backupFolder` is empty */
         guard let lastBackup = self.lastBackupDate else {
             Log.backend.debug("VirtualMachine.modified() guard let lastBackup failed")
             return true
         }
 
-        // 2. is VM running → query VetBackup for exact time
+        /** 2. is VM running? → query Windows utility for exact time */
         if let exactDate = self.vmDatabaseLastModifiedDate() {
             // no grace period needed since Vetvision is always closed on backup
             if exactDate > lastBackup {
@@ -267,17 +267,31 @@ public class VirtualMachine: ObservableObject {
             }
         }
 
-        // 3. VM is not running → check disk file mod date
-        if let modDate = self.diskFile.modified {
-            // 10 minutes grace period since the VM is not closed on backup finish
-            if modDate > lastBackup.addingTimeInterval(600) {
-                // 3. VM has been used, check database modified time
-                Log.backend.debug("VirtualMachine.modified() diskFile is recently modified")
+        /** 3. VM is not running → check disk file mod date */
+        if let diskFileDate = self.diskFile.modified {
+            let componentSet: Set<Calendar.Component> = [
+                .year, .month, .day, .hour, .minute, .second
+            ]
+            let backupComponents = Calendar.current.dateComponents(componentSet, from: lastBackup)
+            let diskComponents = Calendar.current.dateComponents(componentSet, from: diskFileDate)
+            let nowComponents = Calendar.current.dateComponents(componentSet, from: .now)
+
+            /** 3.1 same day, but not today */
+            if sameDay(a: lastBackup, b: diskFileDate),
+                !Calendar.current.isDateInToday(lastBackup) {
+                Log.backup.info("VirtualMachine.modified() last backup date and last use date for VM are same, but not today")
+                return false
+            }
+
+            /** 3.2 today, touched at least 20 minutes after last backup */
+            if Calendar.current.isDateInToday(lastBackup),
+                diskFileDate > lastBackup.addingTimeInterval(1200) {
+                Log.backup.info("VirtualMachine.modified() VM was modified at least 20 minutes after last backup today")
                 return true
             }
         }
 
-        // VM appears untouched since last backup → return false
+        /** VM appears untouched since last backup → return false */
         Log.backend.debug("VirtualMachine.modified() VM looks untouched since last backup")
         return false
     }
