@@ -16,13 +16,13 @@ import Foundation
  * occur only within 'folderMonitorQueue.async { ... }' blocks.
  */
 class FolderMonitor: @unchecked Sendable {
-    // A FileDescriptor for the monitored directory
-    // Only accessed from within 'folderMonitorQueue'
+    /** A FileDescriptor for the monitored directory
+        Only accessed from within `folderMonitorQueue` */
     private var monitoredFolderFileDescriptor: CInt = -1
-    // A DispatchSource to monitor a FileDescriptor created from that directory
-    // Only accessed from within 'folderMonitorQueue'
+    /** A DispatchSource to monitor a FileDescriptor created from that directory
+        Only accessed from within `folderMonitorQueue` */
     private var folderMonitorSource: DispatchSourceFileSystemObject?
-    // A DispatchQueue used for sending file changes in the directory
+    /** A DispatchQueue used for sending file changes in the directory */
     private let folderMonitorQueue = DispatchQueue(label: "FolderMonitorQueue", attributes: .concurrent)
 
     let url: URL
