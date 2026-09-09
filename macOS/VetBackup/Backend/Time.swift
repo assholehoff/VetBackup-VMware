@@ -45,3 +45,88 @@ func next(time: Date) -> Date {
         return n
     }
 }
+
+func sameNotNil(a: Int?, b: Int?) -> Bool {
+    guard a != nil, b != nil, a == b else { return false }
+    return true
+}
+
+func sameDay(a aDate: Date, b bDate: Date) -> Bool {
+    let calendarComponents: Set<Calendar.Component> = [
+        .year, .month, .day, .hour, .minute, .second
+    ]
+    let a = Calendar.current.dateComponents(calendarComponents, from: aDate)
+    let b = Calendar.current.dateComponents(calendarComponents, from: bDate)
+
+    guard sameNotNil(a: a.day, b: b.day),
+          sameNotNil(a: a.month, b: b.month),
+          sameNotNil(a: a.year, b: b.year)
+    else { return false }
+
+    return true
+}
+
+func sameDay(dates: [Date]) -> Bool {
+    guard !dates.isEmpty, let a = dates.first else { return false }
+    let calendarComponents: Set<Calendar.Component> = [
+        .year, .month, .day, .hour, .minute, .second
+    ]
+
+    for b in dates {
+        guard sameDay(a: a, b: b) else { return false }
+    }
+
+    return true
+}
+
+func sameMonth(a aDate: Date, b bDate: Date) -> Bool {
+    let calendarComponents: Set<Calendar.Component> = [
+        .year, .month, .day, .hour, .minute, .second
+    ]
+    let a = Calendar.current.dateComponents(calendarComponents, from: aDate)
+    let b = Calendar.current.dateComponents(calendarComponents, from: bDate)
+
+    guard sameNotNil(a: a.month, b: b.month),
+          sameNotNil(a: a.year, b: b.year)
+    else { return false }
+
+    return true
+}
+
+func sameMonth(dates: [Date]) -> Bool {
+    guard !dates.isEmpty, let a = dates.first else { return false }
+    let calendarComponents: Set<Calendar.Component> = [
+        .year, .month, .day, .hour, .minute, .second
+    ]
+
+    for b in dates {
+        guard sameMonth(a: a, b: b) else { return false }
+    }
+
+    return true
+}
+
+func sameYear(a aDate: Date, b bDate: Date) -> Bool {
+    let calendarComponents: Set<Calendar.Component> = [
+        .year, .month, .day, .hour, .minute, .second
+    ]
+    let a = Calendar.current.dateComponents(calendarComponents, from: aDate)
+    let b = Calendar.current.dateComponents(calendarComponents, from: bDate)
+
+    guard sameNotNil(a: a.year, b: b.year) else { return false }
+
+    return true
+}
+
+func sameYear(dates: [Date]) -> Bool {
+    guard !dates.isEmpty, let a = dates.first else { return false }
+    let calendarComponents: Set<Calendar.Component> = [
+        .year, .month, .day, .hour, .minute, .second
+    ]
+
+    for b in dates {
+        guard sameYear(a: a, b: b) else { return false }
+    }
+
+    return true
+}
