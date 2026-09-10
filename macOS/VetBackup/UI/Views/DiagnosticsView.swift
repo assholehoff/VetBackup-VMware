@@ -216,6 +216,13 @@ struct DiagnosticsView: View {
                         }
                     }
                 }
+                .border(.bar, width: 2)
+                VStack(spacing: 12) {
+                    Button("archiveMenuDisabled") {
+                        AppUIState.shared.archiveMenuDisabled.toggle()
+                    }
+                }
+                .border(.bar, width: 2)
                 Spacer()
             }
         }
