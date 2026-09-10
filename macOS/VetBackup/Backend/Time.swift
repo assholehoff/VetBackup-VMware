@@ -46,6 +46,10 @@ func next(time: Date) -> Date {
     }
 }
 
+func lastNthMonth(_ n: Int) -> Date? {
+    Calendar.current.date(byAdding: .month, value: n, to: .now)
+}
+
 func sameNotNil(a: Int?, b: Int?) -> Bool {
     guard a != nil, b != nil, a == b else { return false }
     return true
