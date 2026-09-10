@@ -5,6 +5,7 @@
 //  Created by Anton Dahlén on 2026-08-30.
 //
 
+import os
 import SwiftUI
 
 struct DiagnosticsView: View {
@@ -218,8 +219,8 @@ struct DiagnosticsView: View {
                 }
                 .border(.bar, width: 2)
                 VStack(spacing: 12) {
-                    Button("archiveMenuDisabled") {
-                        AppUIState.shared.archiveMenuDisabled.toggle()
+                    Button(String(describing: DiagnosticsView.self)) {
+                        Log.app.debug("pressed the \(String(describing: DiagnosticsView.self)) button")
                     }
                 }
                 .border(.bar, width: 2)

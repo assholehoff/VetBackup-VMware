@@ -39,5 +39,8 @@ struct VetBackupApp: App {
         Window("Diagnostics", id: "diagnostics") {
             DiagnosticsView()
         }
+        .commands {
+            // DiagnosticsCommands()
+        }
     }
 }

@@ -12,6 +12,7 @@
       }
     },
     "%lld files" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -44,6 +45,46 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld filer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld files, %@" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld file, %2$@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%1$lld files, %2$@"
+                }
+              }
+            }
+          }
+        },
+        "sv" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld fil, %2$@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%1$lld filer, %2$@"
                 }
               }
             }
@@ -185,6 +226,19 @@
         }
       }
     },
+    "debug" : {
+      "shouldTranslate" : false
+    },
+    "Delete outdated archives" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radera utdaterade arkiv "
+          }
+        }
+      }
+    },
     "Diagnostics" : {
       "localizations" : {
         "sv" : {
@@ -194,6 +248,9 @@
           }
         }
       }
+    },
+    "exportLogs" : {
+      "shouldTranslate" : false
     },
     "Folder" : {
       "localizations" : {
@@ -276,6 +333,16 @@
         }
       }
     },
+    "Mark outdated archives" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visa utdaterade arkiv"
+          }
+        }
+      }
+    },
     "Modified" : {
       "localizations" : {
         "sv" : {
@@ -318,6 +385,16 @@
         }
       }
     },
+    "No backup folder loaded" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen arbetsmapp laddad"
+          }
+        }
+      }
+    },
     "Password" : {
       "localizations" : {
         "sv" : {
@@ -354,6 +431,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Avsluta"
+          }
+        }
+      }
+    },
+    "Rescan backup folder" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uppdatera arbetsmappen"
           }
         }
       }

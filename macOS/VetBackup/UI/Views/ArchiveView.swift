@@ -112,14 +112,8 @@ struct ArchiveView: View {
                 Text("No backup folder loaded")
             }
         }
-        .onAppear {
-            AppUIState.shared.showingArchiveWindow = true
-            AppUIState.shared.archiveMenuDisabled = false
-        }
-        .onDisappear {
-            AppUIState.shared.showingArchiveWindow = false
-            AppUIState.shared.archiveMenuDisabled = true
-        }
+        .onAppear { AppUIState.shared.showingArchiveWindow = true }
+        .onDisappear { AppUIState.shared.showingArchiveWindow = false }
         .onChange(of: sortColumn) {
             files = files.sorted(by: sortFile(a:b:))
         }
