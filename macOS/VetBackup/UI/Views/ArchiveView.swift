@@ -5,9 +5,11 @@
 //  Created by Anton Dahlén on 2026-08-27.
 //
 
+import os
 import SwiftUI
 
 struct ArchiveView: View {
+    @State private var model: ArchiveModel = ArchiveModel()
     @State private var files: [BackupFile] = []
     @State private var selectedFiles = Set<BackupFile.ID>()
     @State private var sortColumn: SortColumn = .date
@@ -19,94 +21,105 @@ struct ArchiveView: View {
 
     var body: some View {
         ZStack {
-            VStack {
-                List(selection: $selectedFiles) {
-                    // Header row:
-                    HStack(alignment: .firstTextBaseline) {
+            if let folder = AppSettings.shared.bf.folder {
+                VStack {
+                    List(selection: $model.selected) {
+                        // Header row:
                         HStack(alignment: .firstTextBaseline) {
-                            Text("Name")
-                            Spacer()
-                            if sortColumn == .name {
-                                if sortAscending {
-                                    Image(systemName: "arrowtriangle.up.fill")
-                                } else {
-                                    Image(systemName: "arrowtriangle.down.fill")
+                            HStack(alignment: .firstTextBaseline) {
+                                Text("Name")
+                                Spacer()
+                                if sortColumn == .name {
+                                    if sortAscending {
+                                        Image(systemName: "arrowtriangle.up.fill")
+                                    } else {
+                                        Image(systemName: "arrowtriangle.down.fill")
+                                    }
                                 }
                             }
-                        }
-                        .contentShape(.rect)
-                        .frame(width: 196, alignment: .leading)
-                        .background()
-                        .backgroundStyle(.windowBackground)
-                        .onTapGesture {
-                            toggleSort(.name)
-                        }
-                        Divider()
-                        HStack(alignment: .firstTextBaseline) {
-                            Text("Date")
-                            Spacer()
-                            Spacer()
-                            if sortColumn == .date {
-                                if sortAscending {
-                                    Image(systemName: "arrowtriangle.up.fill")
-                                } else {
-                                    Image(systemName: "arrowtriangle.down.fill")
-                                }
-                            }
-                        }
-                        .contentShape(.rect)
-                        .frame(width: 196, alignment: .leading)
-                        .background()
-                        .backgroundStyle(.windowBackground)
-                        .onTapGesture {
-                            toggleSort(.date)
-                        }
-                        Divider()
-                        HStack {
-                            Text("Size")
-                            Spacer()
-                            if sortColumn == .size {
-                                if sortAscending {
-                                    Image(systemName: "arrowtriangle.up.fill")
-                                } else {
-                                    Image(systemName: "arrowtriangle.down.fill")
-                                }
-                            }
-                        }
-                        .contentShape(.rect)
-                        .frame(width: 64, alignment: .leading)
-                        .background()
-                        .backgroundStyle(.windowBackground)
-                        .onTapGesture {
-                            toggleSort(.size)
-                        }
-                        Divider()
-                        Text("\(Image(systemName: "cloud.fill"))")
                             .contentShape(.rect)
-                            .frame(width: 16)
+                            .frame(width: 196, alignment: .leading)
                             .background()
                             .backgroundStyle(.windowBackground)
-                        Divider()
-                        Text("\(Image(systemName: "server.rack"))")
+                            .onTapGesture {
+                                toggleSort(.name)
+                            }
+                            Divider()
+                            HStack(alignment: .firstTextBaseline) {
+                                Text("Date")
+                                Spacer()
+                                Spacer()
+                                if sortColumn == .date {
+                                    if sortAscending {
+                                        Image(systemName: "arrowtriangle.up.fill")
+                                    } else {
+                                        Image(systemName: "arrowtriangle.down.fill")
+                                    }
+                                }
+                            }
                             .contentShape(.rect)
-                            .frame(width: 16)
+                            .frame(width: 196, alignment: .leading)
                             .background()
                             .backgroundStyle(.windowBackground)
+                            .onTapGesture {
+                                toggleSort(.date)
+                            }
+                            Divider()
+                            HStack {
+                                Text("Size")
+                                Spacer()
+                                if sortColumn == .size {
+                                    if sortAscending {
+                                        Image(systemName: "arrowtriangle.up.fill")
+                                    } else {
+                                        Image(systemName: "arrowtriangle.down.fill")
+                                    }
+                                }
+                            }
+                            .contentShape(.rect)
+                            .frame(width: 64, alignment: .leading)
+                            .background()
+                            .backgroundStyle(.windowBackground)
+                            .onTapGesture {
+                                toggleSort(.size)
+                            }
+                            Divider()
+                            Text("\(Image(systemName: "cloud.fill"))")
+                                .contentShape(.rect)
+                                .frame(width: 16)
+                                .background()
+                                .backgroundStyle(.windowBackground)
+                            Divider()
+                            Text("\(Image(systemName: "server.rack"))")
+                                .contentShape(.rect)
+                                .frame(width: 16)
+                                .background()
+                                .backgroundStyle(.windowBackground)
+                        }
+                        // Data:
+                        ForEach(files) { file in
+                            FileRowView(file: file, model: model)
+                        }
                     }
-                    // Data:
-                    ForEach(files) { file in
-                        FileRowView(file: file)
-                    }
+                    .alternatingRowBackgrounds(.enabled)
+                    .listStyle(.plain)
+                    Text("\(files.count) files, \(sizeString(bytes: folder.size))")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
-                .listStyle(.plain)
-                Text("\(files.count) files")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                .padding([.horizontal, .bottom], 8)
+            } else {
+                Text("No backup folder loaded")
             }
-            .padding([.horizontal, .bottom], 8)
         }
-        .onAppear { AppUIState.shared.showingArchiveWindow = true }
-        .onDisappear { AppUIState.shared.showingArchiveWindow = false }
+        .onAppear {
+            AppUIState.shared.showingArchiveWindow = true
+            AppUIState.shared.archiveMenuDisabled = false
+        }
+        .onDisappear {
+            AppUIState.shared.showingArchiveWindow = false
+            AppUIState.shared.archiveMenuDisabled = true
+        }
         .onChange(of: sortColumn) {
             files = files.sorted(by: sortFile(a:b:))
         }
