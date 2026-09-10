@@ -11,9 +11,9 @@ import SwiftUI
 struct ArchiveView: View {
     @State private var model: ArchiveModel = ArchiveModel()
     @State private var files: [BackupFile] = []
-    @State private var selectedFiles = Set<BackupFile.ID>()
     @State private var sortColumn: SortColumn = .date
     @State private var sortAscending: Bool = true
+    @State private var deleteAlertIsPresented: Bool = false
 
     enum SortColumn {
         case date, name, size
@@ -23,6 +23,36 @@ struct ArchiveView: View {
         ZStack {
             if let folder = AppSettings.shared.bf.folder {
                 VStack {
+                    HStack {
+                        Spacer()
+                        Button("Highlight outdated archives", systemImage: "highlighter") {
+                            model.highlight.toggle()
+                            Log.app.info("set highlight to \(model.highlight)")
+                        }
+                        Button("Delete outdated archives", systemImage: "trash") {
+                            deleteAlertIsPresented = true
+                        }
+                        .alert(
+                            "Delete outdated archives?",
+                            isPresented: $deleteAlertIsPresented,
+                            actions: {
+                                Button("No", role: .cancel) {}
+                                Button("Yes", role: .destructive) {
+                                    if let result = AppSettings.shared.bf.folder?.deleteOutdated() {
+                                        if result {
+                                            Log.app.notice("Deleted outdated files")
+                                        } else {
+                                            Log.app.error("Failed to delete outdated files")
+                                        }
+                                    }
+                                }
+                            },
+                            message: {
+                                Text("Deleting \(folder.outdated.count) outdated files will free \(sizeString(bytes: folder.outdatedSize))")
+                            }
+                        )
+                        .disabled(!model.highlight)
+                    }
                     List(selection: $model.selected) {
                         // Header row:
                         HStack(alignment: .firstTextBaseline) {
@@ -103,9 +133,18 @@ struct ArchiveView: View {
                     }
                     .alternatingRowBackgrounds(.enabled)
                     .listStyle(.plain)
-                    Text("\(files.count) files, \(sizeString(bytes: folder.size))")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                    HStack {
+                        Spacer()
+                        Text("\(files.count) files, \(sizeString(bytes: folder.size))")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        if !model.selected.isEmpty {
+                            Text("\(model.selected.count) files selected")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                    }
                 }
                 .padding([.horizontal, .bottom], 8)
             } else {

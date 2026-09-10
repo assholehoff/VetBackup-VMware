@@ -11,4 +11,5 @@ import SwiftUI
     var files: [BackupFile] = []
     var outdated = Set<BackupFile.ID>()
     var selected = Set<BackupFile.ID>()
+    var highlight: Bool = false
 }

@@ -239,6 +239,9 @@
         }
       }
     },
+    "Delete outdated archives?" : {
+
+    },
     "Diagnostics" : {
       "localizations" : {
         "sv" : {
@@ -385,6 +388,9 @@
         }
       }
     },
+    "No" : {
+
+    },
     "No backup folder loaded" : {
       "localizations" : {
         "sv" : {
@@ -434,6 +440,9 @@
           }
         }
       }
+    },
+    "Really delete the outdated archives?" : {
+
     },
     "Rescan backup folder" : {
       "localizations" : {
@@ -541,6 +550,9 @@
     },
     "VMware.app" : {
       "shouldTranslate" : false
+    },
+    "Yes" : {
+
     }
   },
   "version" : "1.1"

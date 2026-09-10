@@ -22,6 +22,7 @@ class BackupFolder: ObservableObject {
             size += file.size
         }
         self.size = size
+        Task { self.updateOutdated() }
     }}
     @Published var selection: Set<BackupFile.ID> = [] { didSet {
         var selectedSize: Int64 = 0
@@ -31,6 +32,7 @@ class BackupFolder: ObservableObject {
             }
         }
         self.selectedSize = selectedSize
+        Log.backend.info("\(self.selection.count) selected files occupy \(sizeString(bytes: self.selectedSize))")
     }}
     @Published var outdated: Set<BackupFile.ID> = [] { didSet {
         var outdatedSize: Int64 = 0
@@ -40,6 +42,7 @@ class BackupFolder: ObservableObject {
             }
         }
         self.outdatedSize = outdatedSize
+        Log.backend.info("\(self.outdated.count) outdated files occupy \(sizeString(bytes: self.outdatedSize))")
     }}
     @Published var size: Int64 = 0
     @Published var selectedSize: Int64 = 0
@@ -72,8 +75,11 @@ class BackupFolder: ObservableObject {
     }
 
     func identifyOutdatedFiles() -> Set<BackupFile.ID> {
-        Log.backend.debug("BackupFolder.deleteOutdatedFiles()")
-        guard !files.isEmpty else { return [] }
+        Log.backend.info("BackupFolder.identifyOutdatedFiles()")
+        guard files.count > 10 else {
+            Log.backend.info("there are fewer than 10 files, will not delete any")
+            return []
+        }
 
         guard let lastWeek = Calendar.current.date(byAdding: .day, value: -7, to: .now),
               let lastFortnight = Calendar.current.date(byAdding: .day, value: -14, to: .now),
@@ -116,25 +122,30 @@ class BackupFolder: ObservableObject {
         return deleteProposal
     }
 
-    func markOutdated() {
-        Log.backend.debug("BackupFolder.markOutdated()")
+    func updateOutdated() {
+        Log.backend.debug("BackupFolder.updateOutdated()")
         let outdated = identifyOutdatedFiles()
-        var outdatedSize: Int64 = 0
         for file in files {
             if outdated.contains(file.id) {
                 file.isOutdated = true
-                outdatedSize += file.size
             }
         }
         self.outdated = outdated
-        self.outdatedSize = outdatedSize
     }
 
-    func deleteOutdated() {
+    func deleteOutdated() -> Bool {
         Log.backend.debug("BackupFolder.deleteOutdated()")
-        Log.backend.debug("BackupFolder.deleteOutdated() if performed, this operation will free \(sizeString(bytes: self.outdatedSize, ))")
-        // 1. delete outdated
-        // 2. reset self.outdated
+        Log.backend.info("BackupFolder.deleteOutdated() if performed, this operation will free \(sizeString(bytes: self.outdatedSize, ))")
+        let outdatedFiles = files.filter({ $0.isOutdated })
+        do {
+            for file in outdatedFiles {
+                try FileManager.default.removeItem(at: file.url)
+            }
+        } catch {
+            Log.backup.error("BackupFolder.deleteOutdated() error: \(error)")
+            return false
+        }
+        return true
     }
 
     private func scanFolder() {
@@ -181,7 +192,9 @@ class BackupFolder: ObservableObject {
     }
 }
 
-/** A neatly formatted human friendly size string */
+/**
+ * A neatly formatted human friendly size string
+ */
 func sizeString(bytes: Int64) -> String {
     Log.backend.debug("sizeString(bytes:)")
     let bcf = ByteCountFormatter()

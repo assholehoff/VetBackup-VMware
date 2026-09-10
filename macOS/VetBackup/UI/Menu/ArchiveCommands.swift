@@ -11,33 +11,29 @@ import SwiftUI
 struct ArchiveCommands: Commands {
     @Environment(\.openWindow) var openWindow
     @FocusedValue(ArchiveModel.self) private var archiveModel: ArchiveModel?
+    @State var deleteAlertIsPresented: Bool = false
 
     var body: some Commands {
         CommandGroup(after: .newItem) {
             Button("Mark outdated archives") {
                 Log.app.debug("pressed \"Mark outdated archives\" button")
-                AppSettings.shared.bf.folder?.markOutdated()
+                AppSettings.shared.bf.folder?.updateOutdated()
             }
             .keyboardShortcut("r")
-            Button("Delete outdated archives") {
-                Log.app.debug("pressed \"Mark outdated archives\" button")
-                AppSettings.shared.bf.folder?.markOutdated()
-            }
-            .keyboardShortcut("d")
-            Button("Rescan backup folder") {
-                Log.app.debug("pressed \"rescan")
-            }
         }
+
+        CommandGroup(replacing: .singleWindowList) {}
+
         CommandGroup(replacing: .windowList) {
-            Button("Diagnostics") {
-                openWindow(id: "diagnostics")
-            }
-            .keyboardShortcut("0")
             Button("Archive") {
                 openWindow(id: "archive")
             }
             .keyboardShortcut("1")
+
+            Button("Diagnostics") {
+                openWindow(id: "diagnostics")
+            }
+            .keyboardShortcut("0")
         }
-        CommandGroup(replacing: .singleWindowList) {}
     }
 }

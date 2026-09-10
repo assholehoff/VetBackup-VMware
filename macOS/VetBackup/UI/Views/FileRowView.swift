@@ -12,6 +12,7 @@ struct FileRowView: View {
     @State var fileSizeString: String = ""
     @State var model: ArchiveModel
     @State var selected: Bool = false
+    @State var highlight: Bool = false
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
@@ -29,9 +30,9 @@ struct FileRowView: View {
                     .foregroundStyle(.secondary).frame(width: 20)
             }
         }
-        .foregroundStyle(file.isOutdated ? Color.white.opacity(1) : .primary)
+        .foregroundStyle((file.isOutdated && highlight) ? Color.white.opacity(1) : .primary)
         .listRowBackground(
-            file.isOutdated ? (selected ? Color.purple.opacity(1) : Color.red.opacity(1)) : Color.clear
+            (file.isOutdated && highlight) ? (selected ? Color.purple.opacity(1) : Color.red.opacity(1)) : Color.clear
         )
         .onAppear {
             if !file.iCloudIsUploaded { file.startMonitoring() }
@@ -42,6 +43,9 @@ struct FileRowView: View {
         }
         .onReceive(file.$size) { _ in
             fileSizeString = file.sizeString()
+        }
+        .onChange(of: model.highlight) { _, newValue in
+            highlight = newValue
         }
         .onChange(of: model.selected) {
             if model.selected.contains(file.id) {
