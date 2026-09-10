@@ -27,6 +27,8 @@ public class BackupFile: File, ObservableObject {
     @Published var lanUploaded: Bool
     @Published var lanIsUploading: Bool
 
+    @Published var isOutdated: Bool = false
+
     private var monitorTask: Task<Void, Never>?
 
     public init(url: URL) {
