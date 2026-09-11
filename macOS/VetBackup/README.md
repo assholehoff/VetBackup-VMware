@@ -1,8 +1,6 @@
 # VetBackup.app -- the macOS component
 
-## Recent
-
-### v0.9.7
+### v1.0.0
 
 - Updated **BackupFolder** to
     - identify outdated archives
@@ -14,10 +12,6 @@
 - Updated **Archive** window with
     - Button to toggle highlight outdated backups in red
     - Button to delete outdated backups
+    - Polished the UI in the window
 - Setup automatically incrementing build numbers (`version.sh`)
 
-## Planned
-
-### v1.0.0
-
-- Polish the UI a bit in **Archive** window
