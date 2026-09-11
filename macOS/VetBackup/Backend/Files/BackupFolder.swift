@@ -148,6 +148,16 @@ class BackupFolder: ObservableObject {
         return true
     }
 
+    func sizeupFilesIn(set fileIDs: Set<BackupFile.ID>) -> Int64 {
+        var size: Int64 = 0
+        for file in files {
+            if fileIDs.contains(file.id) {
+                size += file.size
+            }
+        }
+        return size
+    }
+
     private func scanFolder() {
         Log.backend.debug("BackupFolder.scanFolder()")
         self.files = listBackupFiles(in: self.url)
