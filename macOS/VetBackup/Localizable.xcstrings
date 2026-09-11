@@ -52,6 +52,57 @@
         }
       }
     },
+    "%lld files selected" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld file selected"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "%lld files selected"
+                }
+              }
+            }
+          }
+        },
+        "sv" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld fil vald"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld filer valda"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld files selected (%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld files selected (%2$@"
+          }
+        }
+      }
+    },
     "%lld files, %@" : {
       "localizations" : {
         "en" : {
@@ -240,7 +291,54 @@
       }
     },
     "Delete outdated archives?" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radera utdaterade arkiv?"
+          }
+        }
+      }
+    },
+    "Deleting %lld outdated files will free %@" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Deleting %1$lld outdated file will free %2$@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "new",
+                  "value" : "Deleting %1$lld outdated files will free %2$@"
+                }
+              }
+            }
+          }
+        },
+        "sv" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Radera %1$1lld utdaterad fil frigör %2$@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Radera %1$1lld utdaterade filer frigör %2$@"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "Diagnostics" : {
       "localizations" : {
@@ -271,6 +369,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Allmänt"
+          }
+        }
+      }
+    },
+    "Highlight outdated archives" : {
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markera utdaterade arkiv"
           }
         }
       }
@@ -337,6 +445,7 @@
       }
     },
     "Mark outdated archives" : {
+      "extractionState" : "stale",
       "localizations" : {
         "sv" : {
           "stringUnit" : {
@@ -389,7 +498,14 @@
       }
     },
     "No" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nej"
+          }
+        }
+      }
     },
     "No backup folder loaded" : {
       "localizations" : {
@@ -442,9 +558,18 @@
       }
     },
     "Really delete the outdated archives?" : {
-
+      "extractionState" : "stale",
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verkligen radera utdaterade arkiv?"
+          }
+        }
+      }
     },
     "Rescan backup folder" : {
+      "extractionState" : "stale",
       "localizations" : {
         "sv" : {
           "stringUnit" : {
@@ -552,7 +677,14 @@
       "shouldTranslate" : false
     },
     "Yes" : {
-
+      "localizations" : {
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ja"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

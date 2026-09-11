@@ -9,7 +9,7 @@ import SwiftUI
 
 @Observable final class ArchiveModel {
     var files: [BackupFile] = []
-    var outdated = Set<BackupFile.ID>()
-    var selected = Set<BackupFile.ID>()
-    var highlight: Bool = false
+    var outdatedFileIDs = Set<BackupFile.ID>()
+    var selectedFileIDs = Set<BackupFile.ID>()
+    var highlightOutdatedFiles: Bool = false
 }

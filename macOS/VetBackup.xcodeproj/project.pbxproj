@@ -14,9 +14,33 @@
 		3A4BAC592EDA6025009BA8A2 /* VetBackup.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VetBackup.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		3AC8DCA130540244005803A3 /* Exceptions for "VetBackup" folder in "VetBackup" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				README.md,
+			);
+			target = 3A4BAC582EDA6025009BA8A2 /* VetBackup */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		3AC8DCA230540244005803A3 /* Exceptions for "VetBackup" folder in "Compile Sources" phase from "VetBackup" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 3A4BAC552EDA6025009BA8A2 /* Sources */;
+			membershipExceptions = (
+				README.md,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3A4BAC5B2EDA6025009BA8A2 /* VetBackup */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				3AC8DCA130540244005803A3 /* Exceptions for "VetBackup" folder in "VetBackup" target */,
+				3AC8DCA230540244005803A3 /* Exceptions for "VetBackup" folder in "Compile Sources" phase from "VetBackup" target */,
+			);
 			path = VetBackup;
 			sourceTree = "<group>";
 		};

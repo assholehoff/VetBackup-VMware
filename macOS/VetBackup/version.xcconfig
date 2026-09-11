@@ -8,6 +8,6 @@
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
 
-VERSION = 0.9.7
-BUILD_NUMBER = 428
-BUILD_NUMBER_HEX = 1AC
+VERSION = 1.0.0
+BUILD_NUMBER = 440
+BUILD_NUMBER_HEX = 1B8

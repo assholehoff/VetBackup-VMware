@@ -44,11 +44,11 @@ struct FileRowView: View {
         .onReceive(file.$size) { _ in
             fileSizeString = file.sizeString()
         }
-        .onChange(of: model.highlight) { _, newValue in
+        .onChange(of: model.highlightOutdatedFiles) { _, newValue in
             highlight = newValue
         }
-        .onChange(of: model.selected) {
-            if model.selected.contains(file.id) {
+        .onChange(of: model.selectedFileIDs) {
+            if model.selectedFileIDs.contains(file.id) {
                 selected = true
             } else {
                 selected = false
